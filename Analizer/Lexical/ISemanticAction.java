@@ -7,6 +7,8 @@ package Lexical;
  * @author niconistal
  *
  */
-public class ISemanticAction {
+public interface ISemanticAction {
 
+	public abstract void performAction(Token tok);
+	
 }
