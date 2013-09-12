@@ -37,4 +37,14 @@ public class TransitionCell {
 	public ArrayList<ISemanticAction> getActions(){
 		return this.actions;
 	}
+	
+	public String toString(){
+		String returnString = "";
+		Integer state = new Integer(this.nextState);
+		returnString += state.toString();
+		returnString += " - ";
+		returnString += actions.toString();
+		
+		return returnString;
+	}
 }

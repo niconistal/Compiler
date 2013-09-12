@@ -1,6 +1,8 @@
 package Lexical;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 public class TransitionMatrix {
 	
@@ -19,5 +21,31 @@ public class TransitionMatrix {
 	
 	public Object getCellValue(int state, String character){
 		return matrix[state].get(character);
+	}
+	
+	@Override
+	public String toString(){
+		String eol = System.getProperty("line.separator");  
+		String returnString = "";
+		Set<String> keys = matrix[0].keySet();
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String s = iterator.next();
+			returnString += "|  ";
+			returnString += s;
+			returnString += "  |";
+		}
+		returnString += eol;
+		for(HashMap<String, Object> row : matrix){
+			for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+				String s = iterator.next();
+				returnString += "| ";
+				returnString += row.get(s).toString();
+				returnString += " |";
+			}
+			returnString += eol;
+		}
+		
+		
+		return returnString;
 	}
 }

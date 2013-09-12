@@ -3,25 +3,18 @@
  */
 package Lexical;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 
@@ -31,11 +24,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class LexicalAnalizer {
 	
-	private static final char LINE_BREAK = '\n'; //Our static definition of line break
+	public static final char LINE_BREAK = '\n'; //Our static definition of line break
 	
-	protected static final int STATEQ = 7;
+	protected static final int STATEQ = 8;
 	protected StringCharacterIterator source;
 	protected TransitionMatrix transitionMatrix;
+	protected int state;
+	protected static final int INITIAL_STATE = 0;
+	protected static final int FINAL_STATE = 13;
+	protected static final String EOF = "#";
+	protected int line = 0;
+	
+	protected String nextStatesFile = "next_states.csv";
+
 	
 	/**
 	 * This is the default constructor. Takes a path and initializes the Lexical Analizer.
@@ -43,8 +44,18 @@ public class LexicalAnalizer {
 	 * 
 	 */
 	public LexicalAnalizer(String path){
+		state = INITIAL_STATE;
+		transitionMatrix = new TransitionMatrix(STATEQ);
 		try {
-			source = new StringCharacterIterator(readFile(path,StandardCharsets.US_ASCII));
+			this.initializeMatrix();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			String theFileText = readFile(path,StandardCharsets.US_ASCII);
+			source = new StringCharacterIterator(theFileText);
+			System.out.println("ELSTRIING: "+theFileText);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -56,8 +67,27 @@ public class LexicalAnalizer {
 	 * @return theToken the next Token
 	 */
 	public Token getToken(){
-		Token theToken = new Token();
+		state = INITIAL_STATE;
+		System.out.println(transitionMatrix.toString());
+		System.out.println("Hello"+transitionMatrix.getCellValue(0, "\\n"));
 		
+		Token theToken = null;
+		theToken = new Token();
+		while (state != FINAL_STATE){
+			String character = CharacterInterpreter.getInterpretedChar(Character.toString(source.current()));
+			System.out.println("State: "+state);
+			System.out.println("Character: "+character);
+			TransitionCell currentCell = (TransitionCell) this.transitionMatrix.getCellValue(state, character);
+			state = currentCell.getNextState();
+			if (currentCell.getActions() != null){
+				for (ISemanticAction sa : currentCell.getActions()){
+					System.out.println(sa.toString());
+					sa.performAction(theToken, source, line);
+				}
+			}
+			
+			source.next();
+		}
 		
 		
 		return theToken;
@@ -79,6 +109,7 @@ public class LexicalAnalizer {
 	private static String readFile(String path, Charset encoding) throws IOException{
 		ArrayList<String> lineList =  (ArrayList<String>) Files.readAllLines(Paths.get(path),encoding);
 		String retString = "";
+		lineList.add(EOF);
 		for (String s : lineList){
 			retString += s;
 			retString += LINE_BREAK;
@@ -87,60 +118,94 @@ public class LexicalAnalizer {
 		
 	}
 	
-	public void initializeMatrix() throws IOException{
-		FileInputStream file = new FileInputStream(new File("transitionMatrix.xls"));
-	     
-	    //Get the workbook instance for XLS file 
-	    HSSFWorkbook workbook = new HSSFWorkbook(file);
-	 
-	    //Get first sheet from the workbook
-	    HSSFSheet sheet = workbook.getSheetAt(0);
-	     
-	    //Iterate through each rows from first sheet
-	    Iterator<Row> rowIterator = sheet.iterator();
-	    int rowIndex = 0;
-	    int columnIndex;
-	    String characterColumn = "";
-	    ArrayList<String> charRow = new ArrayList<String>();
-	    //get the first row, the one with the characters
-	    while(rowIterator.hasNext() && rowIndex < 1) {
-	    	int cellIndex = 1;
-	    	Row row = rowIterator.next();
-	    	Iterator<Cell> cellIterator = row.cellIterator();
-	        while(cellIterator.hasNext()) {
-	        	Cell cell = cellIterator.next();
-	        	cell.setCellType(Cell.CELL_TYPE_STRING);
-	        	if(cellIndex % 2 == 0) {
-		            charRow.add(cell.getStringCellValue());
-	        	}
-	        	cellIndex++;
-	        }
-	        rowIndex++;
-	    }
-	    while(rowIterator.hasNext()) {
-	        Row row = rowIterator.next();
-	        //For each row, iterate through each columns
-	        Iterator<Cell> cellIterator = row.cellIterator();
-	        while(cellIterator.hasNext()) {
-	            Cell cell = cellIterator.next();
-	            columnIndex = cell.getColumnIndex();
-	            System.out.print(cell.getNumericCellValue() + "\t\t");
-	            transitionMatrix.setCellValue(rowIndex, charRow.get(columnIndex), 
-	            new TransitionCell( Integer.parseInt(cell.getStringCellValue()) , null ));
-	            cellIterator.next();
-	        }
-	        System.out.println("");
-	    }
-	    file.close();
+	protected ArrayList<ISemanticAction> parseSemanticActions(String actions){
+		ArrayList<ISemanticAction> parsedActions = new ArrayList<ISemanticAction>();
 		
+		String actionSeparator = " ";
+		String[] stringActions = actions.split(actionSeparator);
+		for(String ac : stringActions){
+			ISemanticAction acAction;
+			switch (ac){
+				
+				case "AS1" :	acAction = new TokenInitializer();
+								break;
+					
+				case "AS2" : 	acAction = new CharacterAdder();
+								break;
+				
+				case "AS3" : 	acAction = new SymbolTableHandler();
+								break;
+				
+				case "AS4" : 	acAction = new RangeChecker();
+								break;
+					
+				case "AS5" : 	acAction = new CharacterReturner();
+								break;
+				
+				case "AS6" :	acAction = new CharacterTruncator();
+								break;
+						
+				case "AS9" :	acAction = new SingleQuoteAdder();
+								break;
+							
+				case "AS10" : 	acAction = new LineCounter();
+								break;
+								
+									
+				default    :	acAction = null;
+			}
+			parsedActions.add(acAction);
+		}
 		
-		
-//		transitionMatrix = new TransitionMatrix(STATEQ);
-//		//Add the cells corresponding to the initial state ( 0 )
-//		
-//		transitionMatrix.setCellValue(0, " ", new TransitionCell( 0 , null ) );
-//		transitionMatrix.setCellValue(0 , "\n", new TransitionCell( 0 , null ));
-		
-		
+		return parsedActions;
 	}
+	
+	public void initializeMatrix() throws IOException{
+		
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ":";
+		String cellSplitBy = "@";
+		
+		try {
+			 
+			br = new BufferedReader(new FileReader(nextStatesFile));
+			String[] headers = (br.readLine()).split(cvsSplitBy);
+			int stateIndex = 0;
+			while ((line = br.readLine()) != null) {
+	 
+			        // use colon as separator
+				String[] matrixLine = line.split(cvsSplitBy);
+				
+				int characterIndex = 0;
+				for(String matrixCell : matrixLine){
+					String[] cellData = matrixCell.split(cellSplitBy);
+					int matrixNextState = Integer.parseInt(cellData[0]);
+					ArrayList<ISemanticAction> semanticActions = parseSemanticActions(cellData[1]);
+					
+					transitionMatrix.setCellValue(stateIndex, headers[characterIndex], new TransitionCell(matrixNextState,semanticActions));
+					characterIndex++;
+				}
+				stateIndex++;
+	 
+			}
+	 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	 
+		//System.out.println(this.transitionMatrix.toString());
+	  }
+		
+
 }
