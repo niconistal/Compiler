@@ -1,7 +1,15 @@
 package Lexical;
 
 import java.text.StringCharacterIterator;
-
+/**
+ * 
+ * @author niconistal
+ *
+ *
+ *	AS3
+ *	Checks if the given symbol is already on the table, if not its added
+ *
+ */
 public class SymbolTableHandler implements ISemanticAction {
 
 	@Override

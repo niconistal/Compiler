@@ -8,6 +8,9 @@ import java.text.StringCharacterIterator;
 /**
  * @author niconistal
  *
+ *	AS2
+ *	Adds a character to the token literal
+ *
  */
 public class CharacterAdder implements ISemanticAction{
 

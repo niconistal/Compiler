@@ -3,6 +3,8 @@
  */
 package Lexical;
 
+import java.util.HashMap;
+
 /**
  * @author niconistal
  *
@@ -33,6 +35,8 @@ public class SymbolTable {
 	 * 
 	 */
 	
+	protected HashMap<String,SymbolElement> symbolTable;
+	
 	protected static SymbolTable instance;
 	
 	protected SymbolTable(){
@@ -40,10 +44,30 @@ public class SymbolTable {
 		
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public static SymbolTable getInstance(){
 		if (instance == null){
 			instance = new SymbolTable();
 		}
 		return instance;
+	}
+	
+	public void addSymbol(String idName, SymbolElement symbol){
+		
+		symbolTable.put(idName,symbol);
+	
+	}
+	/**
+	 * 
+	 * @param idName
+	 * @return
+	 */
+	public SymbolElement identify(String idName){
+		
+		return symbolTable.get(idName);
+		
 	}
 }

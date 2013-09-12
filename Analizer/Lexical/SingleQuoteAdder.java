@@ -1,7 +1,16 @@
 package Lexical;
 
 import java.text.StringCharacterIterator;
-
+/**
+ * 
+ * @author niconistal
+ *
+ *	
+ *	AS9
+ *	Adds a single quote to the token literal and notifies the ErrorHandler of this.
+ *
+ *
+ */
 public class SingleQuoteAdder implements ISemanticAction {
 
 	@Override

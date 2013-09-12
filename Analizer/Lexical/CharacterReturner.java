@@ -8,6 +8,11 @@ import java.text.StringCharacterIterator;
 /**
  * @author niconistal
  *
+ *
+ *	AS5
+ *	Moves the iterator of the source code a step back.
+ *
+ *
  */
 public class CharacterReturner implements ISemanticAction {
 
