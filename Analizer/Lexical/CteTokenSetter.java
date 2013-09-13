@@ -6,6 +6,11 @@ package Lexical;
 /**
  * @author niconistal
  *
+ *
+ *	AS13
+ *	Sets the value of the token to CTE
+ *
+ *
  */
 public class CteTokenSetter extends TokenSetterTemplate {
 
@@ -18,7 +23,7 @@ public class CteTokenSetter extends TokenSetterTemplate {
 	
 	public String toString(){
 		
-		return "AS";
+		return "AS13";
 	}
 
 }

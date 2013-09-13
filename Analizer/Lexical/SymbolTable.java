@@ -3,6 +3,10 @@
  */
 package Lexical;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -38,9 +42,38 @@ public class SymbolTable {
 	protected HashMap<String,SymbolElement> symbolTable;
 	
 	protected static SymbolTable instance;
+	public static final String RESERVED_WORD = "RESERVED";
 	
 	protected SymbolTable(){
 		
+		
+		
+		symbolTable = new HashMap<String,SymbolElement>();
+		
+		BufferedReader br = null;
+		String reservedWordsFile = "reserved_words.txt";
+		
+		try {
+			 
+				br = new BufferedReader(new FileReader(reservedWordsFile));
+				String word;
+				while ((word = br.readLine() ) != null){
+					SymbolElement symbol = new SymbolElement(SymbolTable.RESERVED_WORD, null);
+					addSymbol(word.toUpperCase(), symbol);
+				}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
 	}
 	
@@ -57,7 +90,7 @@ public class SymbolTable {
 	
 	public void addSymbol(String idName, SymbolElement symbol){
 		
-		symbolTable.put(idName,symbol);
+		symbolTable.put(idName.toUpperCase(),symbol);
 	
 	}
 	/**
@@ -67,7 +100,12 @@ public class SymbolTable {
 	 */
 	public SymbolElement identify(String idName){
 		
-		return symbolTable.get(idName);
+		return symbolTable.get(idName.toUpperCase());
 		
+	}
+	
+	public boolean contains(String idName){
+		
+		return symbolTable.containsKey(idName.toUpperCase());
 	}
 }

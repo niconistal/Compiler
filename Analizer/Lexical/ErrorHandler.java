@@ -9,11 +9,11 @@ public class ErrorHandler {
 	
 	
 	protected ErrorHandler(){
-		instance = new ErrorHandler();
+		
 		errors = new ArrayList<Error>();
 	}
 	
-	public ErrorHandler getInstance(){
+	public static ErrorHandler getInstance(){
 		if(instance == null){
 			instance = new ErrorHandler();
 		}
@@ -28,7 +28,7 @@ public class ErrorHandler {
 		String resp = "";
 		
 		for(Error e : errors){
-			resp += e+"\n";
+			resp += e.toString()+"\n";
 		}
 		
 		return resp;

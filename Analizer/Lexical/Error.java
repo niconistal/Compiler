@@ -1,10 +1,18 @@
 package Lexical;
-
+/**
+ * 
+ * @author ipiolanti
+ *
+ */
 public class Error {
 	
 	private String type;
 	private String message;
 	private int line;
+	
+	public static final String TYPE_WARNING = "WARNING";
+	public static final String TYPE_FATAL = "FATAL";
+	public static final String TYPE_NOTIFICATION = "Notification";
 	
 	public Error(String type, String message, int line) {
 		this.type = type;

@@ -14,8 +14,13 @@ import java.text.StringCharacterIterator;
 public class SingleQuoteAdder implements ISemanticAction {
 
 	@Override
-	public void performAction(Token tok, StringCharacterIterator source,Integer line) {
+	public void performAction(Token tok, StringCharacterIterator source,Object line) {
 		tok.addCharacter('\'');
+		
+		//Notify the error handler
+		
+		Error error = new Error( Error.TYPE_WARNING, " Found a quote mark unclosed", (Integer)line);
+		ErrorHandler.getInstance().addError(error);
 		
 	}
 	

@@ -14,7 +14,7 @@ import java.text.StringCharacterIterator;
  */
 public class CharacterAdder implements ISemanticAction{
 
-	public void performAction(Token tok, StringCharacterIterator source,Integer line) {
+	public void performAction(Token tok, StringCharacterIterator source,Object line) {
 		tok.addCharacter(source.current());
 	}
 	

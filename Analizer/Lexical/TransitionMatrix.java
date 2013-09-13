@@ -8,6 +8,7 @@ public class TransitionMatrix {
 	
 	protected HashMap<String, Object> [] matrix;
 	
+	@SuppressWarnings("unchecked")
 	public TransitionMatrix(int size){
 		matrix = new HashMap[size];
 		for (int i = 0 ; i < size; i++){

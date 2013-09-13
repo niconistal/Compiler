@@ -17,7 +17,7 @@ public class RangeChecker implements ISemanticAction {
 	private static long MAX_RANGE = 4294967295L;
 	
 	@Override
-	public void performAction(Token tok, StringCharacterIterator source,Integer line) {
+	public void performAction(Token tok, StringCharacterIterator source,Object line) {
 		Long tokenValue = Long.valueOf(tok.getLiteralValue());
 		boolean belowRange = tokenValue < MIN_RANGE;
 		boolean aboveRange = tokenValue > MAX_RANGE;
@@ -29,6 +29,8 @@ public class RangeChecker implements ISemanticAction {
 		if(belowRange || aboveRange) {
 			tok.setLiteralValue(tokenValue.toString());
 			//throw error
+			Error error = new Error(Error.TYPE_WARNING, "The constant "+tok.getLiteralValue()+" is out of bounds.", (Integer)line);
+			ErrorHandler.getInstance().addError(error);
 		}
 		
 	}

@@ -11,6 +11,6 @@ import java.text.StringCharacterIterator;
  */
 public interface ISemanticAction {
 
-	public abstract void performAction(Token tok, StringCharacterIterator source,Integer line);
+	public abstract void performAction(Token tok, StringCharacterIterator source,Object line);
 	
 }

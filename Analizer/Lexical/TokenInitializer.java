@@ -16,10 +16,10 @@ import java.text.StringCharacterIterator;
 public class TokenInitializer implements ISemanticAction{
 	
 	
-	public void performAction(Token tok, StringCharacterIterator source,Integer line) {
-		// TODO Auto-generated method stub
+	public void performAction(Token tok, StringCharacterIterator source,Object line) {
+
 		tok = new Token();
-		tok.setLine(line.intValue());
+		tok.setLine(((Integer)line).intValue());
 	}
 	
 	@Override

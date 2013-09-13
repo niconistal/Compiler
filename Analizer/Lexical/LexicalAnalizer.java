@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 
 
@@ -33,7 +32,7 @@ public class LexicalAnalizer {
 	protected static final int INITIAL_STATE = 0;
 	protected static final int FINAL_STATE = 13;
 	protected static final String EOF = "#";
-	protected int line = 0;
+	protected int line = 1;
 	
 	protected String nextStatesFile = "next_states.csv";
 
@@ -55,7 +54,6 @@ public class LexicalAnalizer {
 		try {
 			String theFileText = readFile(path,StandardCharsets.US_ASCII);
 			source = new StringCharacterIterator(theFileText);
-			System.out.println("ELSTRIING: "+theFileText);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,13 +65,12 @@ public class LexicalAnalizer {
 	 * @return theToken the next Token
 	 */
 	public Token getToken(){
-		state = INITIAL_STATE;
-		System.out.println(transitionMatrix.toString());
-		System.out.println("Hello"+transitionMatrix.getCellValue(0, "\\n"));
-		
-		Token theToken = null;
-		theToken = new Token();
+		state = INITIAL_STATE;	
+		Token theToken = null;	
 		while (state != FINAL_STATE){
+			if (state == INITIAL_STATE){
+				theToken = new Token();
+			}
 			String character = CharacterInterpreter.getInterpretedChar(Character.toString(source.current()));
 			System.out.println("State: "+state);
 			System.out.println("Character: "+character);
@@ -150,6 +147,20 @@ public class LexicalAnalizer {
 							
 				case "AS10" : 	acAction = new LineCounter();
 								break;
+				
+				case "AS11" : 	acAction = new CharchainTokenSetter();
+								break;
+				
+				case "AS12" : 	acAction = new IDTokenSetter();
+								break;
+				
+				case "AS13" : 	acAction = new CteTokenSetter();
+								break;
+								
+				case "AS14" : 	acAction = new LiteralTokenSetter();
+								break;
+								
+				
 								
 									
 				default    :	acAction = null;
@@ -174,7 +185,7 @@ public class LexicalAnalizer {
 			int stateIndex = 0;
 			while ((line = br.readLine()) != null) {
 	 
-			        // use colon as separator
+			    // use colon as separator
 				String[] matrixLine = line.split(cvsSplitBy);
 				
 				int characterIndex = 0;
@@ -204,7 +215,6 @@ public class LexicalAnalizer {
 			}
 		}
 	 
-		//System.out.println(this.transitionMatrix.toString());
 	  }
 		
 

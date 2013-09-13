@@ -19,13 +19,20 @@ public class CharacterTruncator implements ISemanticAction {
 
 	public static int STRING_LONG = 15;
 	@Override
-	public void performAction(Token tok, StringCharacterIterator source,Integer line) {
+	public void performAction(Token tok, StringCharacterIterator source,Object line) {
 		
 		String truncated = tok.getLiteralValue();
 		if (truncated.length() > STRING_LONG){
+			
+			//The chain got truncated
 			truncated = truncated.substring(0, STRING_LONG);
+			
+			//Error Handler Notification
+			Error error = new Error (Error.TYPE_WARNING, "The chain "+tok.getLiteralValue()+" got truncated to "+truncated, (Integer)line);
+			ErrorHandler.getInstance().addError(error);
+			
 			tok.setLiteralValue(truncated);
-			//TODO notify error handler.
+			
 		}
 		
 	}
