@@ -18,8 +18,7 @@ public class TokenInitializer implements ISemanticAction{
 	
 	public void performAction(Token tok, StringCharacterIterator source,int[] line) {
 
-		tok = new Token();
-		tok.setLine(line[0]);
+		
 	}
 	
 	@Override

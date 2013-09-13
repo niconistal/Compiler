@@ -70,16 +70,16 @@ public class LexicalAnalizer {
 		Token theToken = null;	
 		while (state != FINAL_STATE){
 			if (state == INITIAL_STATE){
-				theToken = new Token();
+				theToken = new Token(this.line[0]);
 			}
 			String character = CharacterInterpreter.getInterpretedChar(Character.toString(source.current()));
-			System.out.println("State: "+state);
-			System.out.println("Character: "+character);
+			//System.out.println("State: "+state);
+			//System.out.println("Character: "+character);
 			TransitionCell currentCell = (TransitionCell) this.transitionMatrix.getCellValue(state, character);
 			state = currentCell.getNextState();
 			if (currentCell.getActions() != null){
 				for (ISemanticAction sa : currentCell.getActions()){
-					System.out.println(sa.toString());
+					//System.out.println(sa.toString());
 					sa.performAction(theToken, source, line);
 				}
 			}

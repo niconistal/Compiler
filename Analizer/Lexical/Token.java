@@ -16,6 +16,9 @@ public class Token {
 	public Token(){
 		line = -1;
 	}
+	public Token(int i){
+		this.line = i;
+	}
 	
 	public void setLine(int line){
 		this.line = line;
@@ -44,6 +47,6 @@ public class Token {
 	}
 	
 	public String toString(){
-		return "Literal: "+this.literal+" Token: "+this.preToken;
+		return "TOKEN -> Literal: "+this.literal+" Token: "+this.preToken+" Line: "+this.getLine();
 	}
 }

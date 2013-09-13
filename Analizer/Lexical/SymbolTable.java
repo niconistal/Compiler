@@ -114,7 +114,7 @@ public class SymbolTable {
 		Set<String> idNames = symbolTable.keySet();
 		String keys = "";
 		for(String s : idNames){
-			keys += s + System.lineSeparator();
+			keys += s+ " -> " +symbolTable.get(s).toString()+ System.lineSeparator();
 		}
 		return keys;
 	}
