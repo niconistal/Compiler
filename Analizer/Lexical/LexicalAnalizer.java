@@ -91,7 +91,14 @@ public class LexicalAnalizer {
 		return theToken;
 		
 	}
-	
+	/**
+	 * 
+	 * @return the current line
+	 * 
+	 */
+	public int getLine(){
+		return this.line[0];
+	}
 	
 	/**
 	 * 

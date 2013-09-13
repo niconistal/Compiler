@@ -1,0 +1,30 @@
+digraph transitionMatrix{
+	rankdir=ST;
+	size="8,5"
+	node [shape = doublecircle]; ST_13;
+	node [shape = circle];
+	ST_0 -> ST_13 	[ label = "EOF | AS1 AS2 AS14" ];
+	ST_0 -> ST_1 	[ label = "L | AS1 AS2"];
+	ST_0 -> ST_2 	[ label = "D | AS1 AS2"];
+	ST_0 -> ST_3	[ label = "= < > ! | AS1 AS2"];
+	ST_0 -> ST_4	[ label = "' | AS1 AS2"];
+	ST_0 -> ST_5	[ label = "( | AS1 AS2"];
+	ST_1 -> ST_1	[ label = "L D | AS2"];
+	ST_1 -> ST_13	[ label = "space \\n \\t ; ' EOF ) , + = / * = < > ! | AS5 AS6 AS12 AS13 AS3"];
+	ST_2 -> ST_2	[ label = "D | AS2"];
+	ST_2 -> ST_13	[ label = "space L \\n \\t ; ' EOF ) , + = / * = < > ! | AS4 AS5 AS12 AS13 AS3"];
+	ST_3 -> ST_13	[ label = "space L D \\n \\t ; ' EOF ) , + / * = < > ! | AS5 AS14"];
+	ST_3 -> ST_13	[ label = "= | AS2 AS14"];
+	ST_4 -> ST_4	[ label = "space \\t L D ; ) , + = / * = < > ! ( | AS2"];
+	ST_4 -> ST_13	[ label = "\\n | AS9 AS10 AS11 AS3"];
+	ST_4 -> ST_13	[ label = "' | AS2 AS11 AS3"];
+	ST_4 -> ST_13	[ label = "EOF | AS5 AS9 AS11 AS3"];
+	ST_5 -> ST_6	[ label = "*"];
+	ST_5 -> ST_13	[ label = "space \\n \\t L D ; ) , + - = / < > ! ' ( EOF | AS5 AS14"];
+	ST_6 -> ST_6	[ label = "U - {* EOF}"];
+	ST_6 -> ST_13	[ label = "EOF | AS5"];
+	ST_6 -> ST_7	[ label = "*"];
+	ST_7 -> ST_13	[ label = "U - {) EOF}"];
+	ST_7 -> ST_0	[ label = ")"];
+	ST_7 -> ST_13	[ label = "EOF | AS5"];
+}
