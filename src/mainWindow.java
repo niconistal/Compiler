@@ -5,6 +5,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -120,7 +121,6 @@ public class mainWindow {
 		JFileChooser fileChooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Compiler source code *.txt","txt");
 		fileChooser.setFileFilter(filter);
-		System.out.println("about to add");
 		frame.getContentPane().add(fileChooser);
 		int returnVal = fileChooser.showOpenDialog(null);
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -129,7 +129,6 @@ public class mainWindow {
 	        //textarea.read( new FileReader( file.getAbsolutePath() ), null );
 	        String path = file.getAbsolutePath();
 	        lblNotSelected.setText(path);
-			System.out.println(file.getAbsolutePath());
 	    } else {
 	        //System.out.println("File access cancelled by user.");
 	    }
@@ -138,6 +137,7 @@ public class mainWindow {
 	public void runCompiler(){
 		if (lblNotSelected.getText().equals("Not selected")){
 			//showAlert("Please choose a file");
+			JOptionPane.showMessageDialog(null,"Please select a file first.");
 		}else{
 			Parser parser = new Parser(lblNotSelected.getText());
 			parser.run();
