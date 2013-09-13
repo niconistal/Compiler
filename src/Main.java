@@ -21,13 +21,6 @@ public class Main {
 		System.out.println("THE TOKEN: "+lex.getToken().toString());
 		System.out.println("THE TOKEN: "+lex.getToken().toString());
 		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
-		System.out.println("THE TOKEN: "+lex.getToken().toString());
 		
 		System.out.println(ErrorHandler.getInstance().toString());
 		

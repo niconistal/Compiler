@@ -14,6 +14,7 @@ public class IDTokenSetter extends TokenSetterTemplate {
 
 	@Override
 	public String resolveToken(Token tok) {
+
 		if (SymbolTable.getInstance().contains(tok.getLiteralValue())){
 			if(SymbolTable.getInstance().identify(tok.getLiteralValue()).getType().equals(SymbolTable.RESERVED_WORD)){
 				return tok.getLiteralValue().toUpperCase();

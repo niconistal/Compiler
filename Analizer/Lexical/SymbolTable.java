@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author niconistal
@@ -107,5 +108,14 @@ public class SymbolTable {
 	public boolean contains(String idName){
 		
 		return symbolTable.containsKey(idName.toUpperCase());
+	}
+	
+	public String toString(){
+		Set<String> idNames = symbolTable.keySet();
+		String keys = "";
+		for(String s : idNames){
+			keys += s + System.lineSeparator();
+		}
+		return keys;
 	}
 }
