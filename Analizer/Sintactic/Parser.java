@@ -902,9 +902,9 @@ public void run()
  * Default constructor.  Turn off with -Jnoconstruct .
 
  */
-public Parser()
+public Parser(String path)
 {
-	lexical = new LexicalAnalizer("test.txt");
+	lexical = new LexicalAnalizer(path);
 }
 
 
