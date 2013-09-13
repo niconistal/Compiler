@@ -24,6 +24,10 @@ public class CharacterInterpreter {
 		 if (character.equals(String.valueOf(LexicalAnalizer.LINE_BREAK))){
 			 return "\\n";
 		 }
+		 if (character.equals(String.valueOf(LexicalAnalizer.TAB))){
+			 return "\\t";
+		 }
+		 
 		 return character;
  
 	}

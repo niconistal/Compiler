@@ -24,6 +24,7 @@ import java.io.FileReader;
 public class LexicalAnalizer {
 	
 	public static final char LINE_BREAK = '\n'; //Our static definition of line break
+	public static final char TAB = '\t';
 	
 	protected static final int STATEQ = 8;
 	protected StringCharacterIterator source;
@@ -32,7 +33,7 @@ public class LexicalAnalizer {
 	protected static final int INITIAL_STATE = 0;
 	protected static final int FINAL_STATE = 13;
 	protected static final String EOF = "#";
-	protected int line = 1;
+	protected int line[] = {1} ;
 	
 	protected String nextStatesFile = "next_states.csv";
 

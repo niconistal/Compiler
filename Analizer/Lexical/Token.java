@@ -21,6 +21,10 @@ public class Token {
 		this.line = line;
 	}
 	
+	public int getLine(){
+		return this.line;
+	}
+	
 	public void addCharacter(char c){
 		literal += c;
 	}

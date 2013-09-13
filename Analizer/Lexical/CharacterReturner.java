@@ -17,7 +17,7 @@ import java.text.StringCharacterIterator;
 public class CharacterReturner implements ISemanticAction {
 
 	@Override
-	public void performAction(Token tok, StringCharacterIterator source,Object line) {
+	public void performAction(Token tok, StringCharacterIterator source,int[] line) {
 
 		source.previous();
 	}

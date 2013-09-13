@@ -12,7 +12,7 @@ import java.text.StringCharacterIterator;
 public abstract class TokenSetterTemplate implements ISemanticAction {
 
 	@Override
-	public void performAction(Token tok, StringCharacterIterator source, Object line) {
+	public void performAction(Token tok, StringCharacterIterator source, int[] line) {
 		
 		String tokenValue = resolveToken(tok);
 		tok.setTokenValue(tokenValue);

@@ -14,9 +14,9 @@ import java.text.StringCharacterIterator;
 public class LineCounter implements ISemanticAction {
 
 	@Override
-	public void performAction(Token tok, StringCharacterIterator source, Object line) {
+	public void performAction(Token tok, StringCharacterIterator source, int[] line) {
 		
-		 line = new Integer(((Integer)line).intValue()+1);
+		line[0]++;
 		
 	}
 	

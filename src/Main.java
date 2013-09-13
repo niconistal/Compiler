@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 import Lexical.ErrorHandler;
 import Lexical.LexicalAnalizer;
 
