@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
+import utils.InputHandler;
+
 
 
 
@@ -25,14 +27,19 @@ public class LexicalAnalizer {
 	
 	public static final char LINE_BREAK = '\n'; //Our static definition of line break
 	public static final char TAB = '\t';
-	
+	public static final String EOF = "#";
+	//STATEQ is the amount of states in the finite-state machine
 	protected static final int STATEQ = 8;
+	//INITIAL_STATE and FINAL_STATE representes the intial and final states
+	//of the finite-state machine
+	protected static final int INITIAL_STATE = 0;
+	protected static final int FINAL_STATE = 13;
 	protected StringCharacterIterator source;
 	protected TransitionMatrix transitionMatrix;
 	protected int state;
-	protected static final int INITIAL_STATE = 0;
-	protected static final int FINAL_STATE = 13;
-	protected static final String EOF = "#";
+	
+	//line represents the current line in analysis, defined as an array to
+	//keep the same reference between different argument passing
 	protected int line[] = {1} ;
 	
 	protected String nextStatesFile = "next_states.csv";
@@ -47,13 +54,13 @@ public class LexicalAnalizer {
 		state = INITIAL_STATE;
 		transitionMatrix = new TransitionMatrix(STATEQ);
 		try {
-			this.initializeMatrix();
+			InputHandler.initializeMatrix(this.nextStatesFile,this.transitionMatrix);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		try {
-			String theFileText = readFile(path,StandardCharsets.US_ASCII);
+			String theFileText = InputHandler.readFile(path,StandardCharsets.US_ASCII);
 			source = new StringCharacterIterator(theFileText);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -61,9 +68,10 @@ public class LexicalAnalizer {
 		}
 	}
 	
+
 	/**
-	 * 
-	 * @return theToken the next Token
+	 * Retrieves the next token, if there's any, of the current source code
+	 * @return Token the token found
 	 */
 	public Token getToken(){
 		state = INITIAL_STATE;	
@@ -73,23 +81,17 @@ public class LexicalAnalizer {
 				theToken = new Token(this.line[0]);
 			}
 			String character = CharacterInterpreter.getInterpretedChar(Character.toString(source.current()));
-			//System.out.println("State: "+state);
-			//System.out.println("Character: "+character);
 			TransitionCell currentCell = (TransitionCell) this.transitionMatrix.getCellValue(state, character);
 			state = currentCell.getNextState();
 			if (currentCell.getActions() != null){
 				for (ISemanticAction sa : currentCell.getActions()){
-					//System.out.println(sa.toString());
 					sa.performAction(theToken, source, line);
 				}
 			}
 			
 			source.next();
 		}
-		
-		
 		return theToken;
-		
 	}
 	/**
 	 * 
@@ -99,131 +101,4 @@ public class LexicalAnalizer {
 	public int getLine(){
 		return this.line[0];
 	}
-	
-	/**
-	 * 
-	 * Takes a path and returns the a string with the contents including cross platform new lines.
-	 * 
-	 * @param path is the string path to the file you want to open, its relative to the project path.
-	 * @param encoding, the encoding that you want the text to be
-	 * @return a String with the new lines as '\n'
-	 * @throws IOException
-	 * 
-	 * 
-	 */
-	private static String readFile(String path, Charset encoding) throws IOException{
-		ArrayList<String> lineList =  (ArrayList<String>) Files.readAllLines(Paths.get(path),encoding);
-		String retString = "";
-		lineList.add(EOF);
-		for (String s : lineList){
-			retString += s;
-			retString += LINE_BREAK;
-		}
-		return retString;
-		
-	}
-	
-	protected ArrayList<ISemanticAction> parseSemanticActions(String actions){
-		ArrayList<ISemanticAction> parsedActions = new ArrayList<ISemanticAction>();
-		
-		String actionSeparator = " ";
-		String[] stringActions = actions.split(actionSeparator);
-		for(String ac : stringActions){
-			ISemanticAction acAction;
-			switch (ac){
-				
-				case "AS1" :	acAction = new TokenInitializer();
-								break;
-					
-				case "AS2" : 	acAction = new CharacterAdder();
-								break;
-				
-				case "AS3" : 	acAction = new SymbolTableHandler();
-								break;
-				
-				case "AS4" : 	acAction = new RangeChecker();
-								break;
-					
-				case "AS5" : 	acAction = new CharacterReturner();
-								break;
-				
-				case "AS6" :	acAction = new CharacterTruncator();
-								break;
-						
-				case "AS9" :	acAction = new SingleQuoteAdder();
-								break;
-							
-				case "AS10" : 	acAction = new LineCounter();
-								break;
-				
-				case "AS11" : 	acAction = new CharchainTokenSetter();
-								break;
-				
-				case "AS12" : 	acAction = new IDTokenSetter();
-								break;
-				
-				case "AS13" : 	acAction = new CteTokenSetter();
-								break;
-								
-				case "AS14" : 	acAction = new LiteralTokenSetter();
-								break;
-								
-				
-								
-									
-				default    :	acAction = null;
-			}
-			parsedActions.add(acAction);
-		}
-		
-		return parsedActions;
-	}
-	
-	public void initializeMatrix() throws IOException{
-		
-		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = ":";
-		String cellSplitBy = "@";
-		
-		try {
-			 
-			br = new BufferedReader(new FileReader(nextStatesFile));
-			String[] headers = (br.readLine()).split(cvsSplitBy);
-			int stateIndex = 0;
-			while ((line = br.readLine()) != null) {
-	 
-			    // use colon as separator
-				String[] matrixLine = line.split(cvsSplitBy);
-				
-				int characterIndex = 0;
-				for(String matrixCell : matrixLine){
-					String[] cellData = matrixCell.split(cellSplitBy);
-					int matrixNextState = Integer.parseInt(cellData[0]);
-					ArrayList<ISemanticAction> semanticActions = parseSemanticActions(cellData[1]);
-					
-					transitionMatrix.setCellValue(stateIndex, headers[characterIndex], new TransitionCell(matrixNextState,semanticActions));
-					characterIndex++;
-				}
-				stateIndex++;
-	 
-			}
-	 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	 
-	  }
-		
-
 }

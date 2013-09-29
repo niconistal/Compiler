@@ -7,7 +7,8 @@ import java.text.StringCharacterIterator;
 
 /**
  * @author niconistal
- *
+ * This interface represents the entire family of semantic
+ * actions.
  */
 public interface ISemanticAction {
 
