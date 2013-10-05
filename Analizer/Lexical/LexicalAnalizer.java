@@ -4,23 +4,15 @@
 package Lexical;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-
 import utils.InputHandler;
 
 
 
 
 /**
- * @author niconistal
+ * @author niconistal y gran elenco
  *
  */
 public class LexicalAnalizer {
@@ -34,6 +26,7 @@ public class LexicalAnalizer {
 	//of the finite-state machine
 	protected static final int INITIAL_STATE = 0;
 	protected static final int FINAL_STATE = 13;
+	
 	protected StringCharacterIterator source;
 	protected TransitionMatrix transitionMatrix;
 	protected int state;

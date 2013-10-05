@@ -1,0 +1,308 @@
+%{
+import java.util.StringTokenizer;
+import Lexical.LexicalAnalizer;
+import Lexical.Token;
+import Lexical.ErrorHandler;
+import Lexical.Error;
+%}
+
+/* YACC Declarations */
+%token VARTYPE
+%token PRINT
+%token ID
+%token CTE
+%token CHARCHAIN
+%token FUNCTION
+%token BEGIN
+%token END
+%token FOR
+%token COMPARATOR
+%token ERROR
+%token IF
+%token THEN
+%token ELSE
+%token ASSIGN
+%token SEMICOLON
+%token COMMA
+%token OPENPAREN
+%token CLOSEPAREN
+%token PLUS
+%token MINUS
+%token PRODUCT
+%token DIVISION
+%token RETURN
+
+%nonassoc IT
+%nonassoc ELSE
+
+/* Grammar follows */
+%%
+
+/* Program */
+program: declarationList
+		|declarationList executions
+		|executions
+		;
+
+/* Declarations */
+
+declarationList: declarationList declaration
+	| declaration
+	;
+
+declaration: varDeclaration
+	| functionDeclaration
+	;
+varDeclarationList: varDeclarationList varDeclaration
+	| varDeclaration
+	;
+varDeclaration: VARTYPE varList SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Variable declaration ", lexical.getLine());
+		errorHandler.addError(error);
+	};
+varList: varList COMMA ID
+	| ID
+	;
+functionDeclaration: FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList END SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Function declaration ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| FUNCTION ID  varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList END SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function declaration ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| FUNCTION ID OPENPAREN varDeclaration  BEGIN varDeclarationList executionWReturnList END SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function declaration ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN  varDeclarationList executionWReturnList END SEMICOLON {
+		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in function declaration ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList  SEMICOLON {
+		Error error = new Error(Error.TYPE_FATAL,"Missing END in function declaration ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	;
+
+
+/* Executions */
+executions: executions execution
+	|execution
+	;
+
+executionWReturnList: executionWReturnList executionWReturn
+	| executionWReturn
+	;
+executionWReturn: execution
+	| ret
+
+execution: print  
+	| functionExecution
+	| iteration
+	| selection
+	| assign
+	;
+
+ret: RETURN OPENPAREN expression CLOSEPAREN SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Return execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| RETURN expression CLOSEPAREN SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| RETURN OPENPAREN expression  SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	;
+print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Print execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| PRINT  CHARCHAIN CLOSEPAREN SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in print execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| PRINT OPENPAREN CHARCHAIN  SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in print execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	;
+
+functionExecution: ID OPENPAREN varList CLOSEPAREN SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Function execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| ID varList CLOSEPAREN SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| ID OPENPAREN varList SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	;
+iteration: FOR OPENPAREN ID ASSIGN expression SEMICOLON ID COMPARATOR expression CLOSEPAREN declarationList executions SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Iteration execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| FOR  ID ASSIGN expression SEMICOLON ID COMPARATOR expression CLOSEPAREN declarationList executions SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in iteration execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| FOR OPENPAREN ID ASSIGN expression SEMICOLON ID COMPARATOR expression  declarationList executions SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in iteration execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	;
+selection: IF  OPENPAREN condition CLOSEPAREN THEN block  ELSE  block SEMICOLON {
+		Error error = new Error(Error.TYPE_NOTIFICATION,"Selection execution ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| IF  condition CLOSEPAREN THEN block  ELSE  block SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| IF  OPENPAREN condition  THEN block  ELSE  block SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| IF  OPENPAREN condition   block  ELSE  block SEMICOLON {
+		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| IF OPENPAREN condition CLOSEPAREN THEN block %prec IT SEMICOLON
+	| IF  condition CLOSEPAREN THEN block %prec IT SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| IF OPENPAREN condition  THEN block %prec IT SEMICOLON {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| IF OPENPAREN condition CLOSEPAREN  block %prec IT SEMICOLON {
+		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	;
+condition: expression COMPARATOR expression ;
+
+block: BEGIN declarationList executions END 
+	| BEGIN declarationList declaration END
+	| declarationList declaration END {
+		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| BEGIN declarationList declaration  {
+		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| BEGIN executions execution END
+	| executions execution END {
+		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| BEGIN executions execution {
+		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", lexical.getLine());
+		errorHandler.addError(error);
+	}
+	| declaration
+	| execution
+	;
+assign: ID ASSIGN expression SEMICOLON {
+	Error error = new Error(Error.TYPE_NOTIFICATION,"Assign execution ", lexical.getLine());
+	errorHandler.addError(error);
+	};
+expression: expression PLUS term
+	| expression MINUS term
+	| term
+	;
+
+term: term PRODUCT factor
+	| term DIVISION factor
+	| factor
+	;
+
+factor: CTE
+	| ID
+	;
+
+%%
+
+String ins;
+StringTokenizer st;
+
+void yyerror(String s) {
+ System.out.println("par:"+s);
+}
+
+boolean newline;
+
+int yylex() {
+	Token token = this.lexical.getToken();
+	yylval = new ParserVal(token);
+	
+	switch(token.getTokenValue()) {
+		case "ID":
+			return Parser.ID;
+		case "CTE" :
+			return Parser.CTE;
+		case "CHARCHAIN" :
+			return Parser.CHARCHAIN;
+		case "ULONG" :
+			return Parser.VARTYPE;
+		case "RETURN" :
+			return Parser.RETURN;
+		case ">" :
+			return Parser.COMPARATOR;
+		case ">=" :
+			return Parser.COMPARATOR;
+		case "<" :
+			return Parser.COMPARATOR;
+		case "<=" :
+			return Parser.COMPARATOR;
+		case "==" :
+			return Parser.COMPARATOR;
+		case "!=" :
+			return Parser.COMPARATOR;
+		case "=" :
+			return Parser.ASSIGN;
+		case ";" :
+			return Parser.SEMICOLON;
+		case "," :
+			return Parser.COMMA;
+		case "(" :
+			return Parser.OPENPAREN;
+		case ")" :
+			return Parser.CLOSEPAREN;
+		case "+" :
+			return Parser.PLUS;
+		case "-" :
+			return Parser.MINUS;
+		case "*" :
+			return Parser.PRODUCT;
+		case "/" :
+			return Parser.DIVISION;
+		case  "PRINT":
+			return Parser.PRINT;
+		case  "FUNCTION":
+			return Parser.FUNCTION;
+		case  "BEGIN" :
+			return Parser.BEGIN;
+		case  "END":
+			return Parser.END;
+		case  "FOR":
+			return Parser.FOR;
+		case  "IF":
+			return Parser.IF;
+		case  "THEN":
+			return Parser.THEN;
+		case  "ELSE":
+			return Parser.ELSE;
+		case  "#":
+			return -1;
+	}
+	return -1;
+}
