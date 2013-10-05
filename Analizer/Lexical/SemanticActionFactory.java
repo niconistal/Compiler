@@ -2,6 +2,20 @@ package Lexical;
 
 import java.util.ArrayList;
 
+import semanticActions.CharacterAdder;
+import semanticActions.CharacterReturner;
+import semanticActions.CharacterTruncator;
+import semanticActions.CharchainTokenSetter;
+import semanticActions.CteTokenSetter;
+import semanticActions.IDTokenSetter;
+import semanticActions.ISemanticAction;
+import semanticActions.LineCounter;
+import semanticActions.LiteralTokenSetter;
+import semanticActions.RangeChecker;
+import semanticActions.SingleQuoteAdder;
+import semanticActions.SymbolTableHandler;
+import semanticActions.TokenInitializer;
+
 /**
  * Factory pattern to create the different semantic actions
  * @author Inti

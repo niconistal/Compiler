@@ -1,9 +1,11 @@
 /**
  * 
  */
-package Lexical;
+package semanticActions;
 
 import java.text.StringCharacterIterator;
+
+import Lexical.Token;
 
 /**
  * @author niconistal

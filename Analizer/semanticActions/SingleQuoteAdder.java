@@ -1,6 +1,10 @@
-package Lexical;
+package semanticActions;
 
 import java.text.StringCharacterIterator;
+
+import Lexical.Error;
+import Lexical.ErrorHandler;
+import Lexical.Token;
 /**
  * 
  * @author niconistal

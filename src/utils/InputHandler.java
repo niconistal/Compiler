@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import Lexical.ISemanticAction;
+import semanticActions.ISemanticAction;
 import Lexical.LexicalAnalizer;
 import Lexical.SemanticActionFactory;
 import Lexical.TransitionCell;

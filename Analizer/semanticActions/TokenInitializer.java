@@ -1,24 +1,31 @@
 /**
  * 
  */
-package Lexical;
+package semanticActions;
 
 import java.text.StringCharacterIterator;
+
+import Lexical.Token;
 
 /**
  * @author niconistal
  *
- *	AS2
- *	Adds a character to the token literal
+ *
+ *	AS1
+ *	Initialize the token
  *
  */
-public class CharacterAdder implements ISemanticAction{
-
+public class TokenInitializer implements ISemanticAction{
+	
+	
 	public void performAction(Token tok, StringCharacterIterator source,int[] line) {
-		tok.addCharacter(source.current());
+
+		
 	}
 	
+	@Override
 	public String toString(){
-		return "AS2";
+		return "AS1";
 	}
+	
 }

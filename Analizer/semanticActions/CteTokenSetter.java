@@ -1,7 +1,9 @@
 /**
  * 
  */
-package Lexical;
+package semanticActions;
+
+import Lexical.Token;
 
 /**
  * @author niconistal

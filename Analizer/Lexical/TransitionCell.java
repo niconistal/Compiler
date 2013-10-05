@@ -5,6 +5,8 @@ package Lexical;
 
 import java.util.ArrayList;
 
+import semanticActions.ISemanticAction;
+
 /**
  * @author niconistal
  *

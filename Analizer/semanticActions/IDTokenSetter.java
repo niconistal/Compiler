@@ -1,7 +1,11 @@
 /**
  * 
  */
-package Lexical;
+package semanticActions;
+
+import Lexical.SymbolTable;
+import Lexical.Token;
+
 /**
  * 
  * @author niconistal

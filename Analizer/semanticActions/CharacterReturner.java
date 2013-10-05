@@ -1,29 +1,32 @@
 /**
  * 
  */
-package Lexical;
+package semanticActions;
 
 import java.text.StringCharacterIterator;
+
+import Lexical.Token;
 
 /**
  * @author niconistal
  *
  *
- *	AS1
- *	Initialize the token
+ *	AS5
+ *	Moves the iterator of the source code a step back.
+ *
  *
  */
-public class TokenInitializer implements ISemanticAction{
-	
-	
+public class CharacterReturner implements ISemanticAction {
+
+	@Override
 	public void performAction(Token tok, StringCharacterIterator source,int[] line) {
 
-		
+		source.previous();
 	}
 	
 	@Override
 	public String toString(){
-		return "AS1";
+		return "AS5";
 	}
-	
+
 }

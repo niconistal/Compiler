@@ -6,6 +6,8 @@ package Lexical;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.StringCharacterIterator;
+
+import semanticActions.ISemanticAction;
 import utils.InputHandler;
 
 
