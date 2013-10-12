@@ -3,7 +3,7 @@
 
 (*Declarations*)
 
-ULONG var1, var2, var3;
+ULONG var1,var2,var3;
 ULONG var4;
 FUNCTION fun1 ( ULONG aux1, aux2; ) 
 	BEGIN 

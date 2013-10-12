@@ -10,6 +10,25 @@ package Lexical;
 public class SymbolElement {
 
 	protected String type;
+	protected String use;
+	protected String varType;
+	
+	public String getUse() {
+		return use;
+	}
+
+	public void setUse(String use) {
+		this.use = use;
+	}
+
+	public String getVarType() {
+		return varType;
+	}
+
+	public void setVarType(String varType) {
+		this.varType = varType;
+	}
+
 	protected Object value;
 	
 	public SymbolElement(String type, Object value){

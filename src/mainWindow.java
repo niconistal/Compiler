@@ -20,6 +20,8 @@ import java.io.File;
 
 import javax.swing.JScrollBar;
 
+import utils.PathContainer;
+
 
 public class mainWindow {
 
@@ -139,7 +141,8 @@ public class mainWindow {
 			//showAlert("Please choose a file");
 			JOptionPane.showMessageDialog(null,"Please select a file first.");
 		}else{
-			Parser parser = new Parser(lblNotSelected.getText());
+			PathContainer.setPath(lblNotSelected.getText());
+			Parser parser = new Parser();
 			parser.run();
 			
 			textArea.setText(ErrorHandler.getInstance().toString());

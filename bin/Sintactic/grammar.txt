@@ -7,12 +7,11 @@ import Lexical.ErrorHandler;
 import Lexical.Error;
 import Lexical.SymbolTable;
 import java.util.ArrayList;
-import utils.PathContainer;
 
 class parserUtils {
 	static ArrayList<String> variableList = new ArrayList<String>(); 
 	static ErrorHandler errorHandler = ErrorHandler.getInstance();
-	static LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());	
+	static LexicalAnalizer lexical;	
 }
 %}
 

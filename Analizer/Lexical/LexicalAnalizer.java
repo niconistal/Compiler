@@ -51,14 +51,12 @@ public class LexicalAnalizer {
 		try {
 			InputHandler.initializeMatrix(this.nextStatesFile,this.transitionMatrix);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		try {
 			String theFileText = InputHandler.readFile(path,StandardCharsets.US_ASCII);
 			source = new StringCharacterIterator(theFileText);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
