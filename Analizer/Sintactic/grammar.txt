@@ -8,11 +8,21 @@ import Lexical.Error;
 import Lexical.SymbolTable;
 import java.util.ArrayList;
 import utils.PathContainer;
+import Lexical.SymbolElement;
+import java.util.HashMap;
 
 class parserUtils {
-	static ArrayList<String> variableList = new ArrayList<String>(); 
+	static ArrayList<String> variableList = new ArrayList<String>();
+	//there will be one reverse polish vector for each function, and one for the main. Each vector
+	//will be able to be accessed by the context name 
+	static HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
 	static ErrorHandler errorHandler = ErrorHandler.getInstance();
-	static LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());	
+	static LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
+	static String context = "main";	
+	//holds the value of the last function return
+	static long functionReturn;
+	//true if the function has returned explicitly
+	static boolean functionHasReturned;
 }
 %}
 
@@ -45,13 +55,16 @@ class parserUtils {
 %nonassoc IT
 %nonassoc ELSE
 
+%start start
+
 /* Grammar follows */
 %%
-start: program {
-	System.out.println("startiiing");
-};
+start :  {
+	//initialize the Main intermediate code vector
+	parserUtils.intermediateCode.put("MAIN", new ArrayList<String>());
+} program ;
 /* Program */
-program: declarationList
+program:declarationList
 		|declarationList executions
 		|executions
 		;
@@ -62,53 +75,109 @@ declarationList: declarationList declaration
 	| declaration
 	;
 
-declaration: varDeclaration
-	| functionDeclaration
+declaration: varDeclaration 
+	| functionDeclaration 
 	;
 varDeclarationList: varDeclarationList varDeclaration
 	| varDeclaration
 	;
-varDeclaration: VARTYPE varList SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Variable declaration ", parserUtils.lexical.getLine());
+singleVarDeclaration: VARTYPE ID SEMICOLON {
+		Error error;
+		String varName = ((Token)$2.obj).getLiteralValue();
+		String varNameWithContext = "";
 		SymbolTable symbolTable = SymbolTable.getInstance();
+		SymbolElement element = symbolTable.identify(varName);
 		String literalTypeValue = ((Token)$1.obj).getLiteralValue();
-		parserUtils.errorHandler.addError(error);
+
+		//clear prior defined variables
+		parserUtils.variableList.clear();
+		//update symbole table by applying name mangling
+		varNameWithContext = parserUtils.context+"_"+varName;
+		//check if variable was already declared
+		if(symbolTable.contains(varNameWithContext)) {
+			error = new Error(Error.TYPE_FATAL,"Variable redeclartion", parserUtils.lexical.getLine());
+			parserUtils.errorHandler.addError(error);
+		}
+		symbolTable.remove(varName);
+		symbolTable.addSymbol(varNameWithContext,element);
+
+		element.setVarType(literalTypeValue);
+		element.setUse("VAR");
+		//return variable name 
+		$$=$2;
+	};
+
+varDeclaration: VARTYPE varList SEMICOLON {
+		Error error;
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		SymbolElement element = new SymbolElement();
+		String varNameWithContext = "";
+		String literalTypeValue = ((Token)$1.obj).getLiteralValue();
+
 		//add type to each symbol table entryof the varList
 		for(String varName : parserUtils.variableList) {
-			symbolTable.identify(varName).setVarType(literalTypeValue);
+			element = symbolTable.identify(varName);
+			//update symbole table by applying name mangling
+			varNameWithContext = parserUtils.context+"_"+varName;
+			//check if variable was already declared
+			if(symbolTable.contains(varNameWithContext)) {
+				error = new Error(Error.TYPE_FATAL,"Variable redeclartion", parserUtils.lexical.getLine());
+				parserUtils.errorHandler.addError(error);
+			}
+			symbolTable.remove(varName);
+			symbolTable.addSymbol(varNameWithContext,element);
+			element.setVarType(literalTypeValue);
+			element.setUse("VAR");
 		}
-		//get the list ready for the following variable declarations
+		//clear prior defined variables
 		parserUtils.variableList.clear();
-
-	};
+	}
+	| singleVarDeclaration
+	;
 varList: varList COMMA ID {
 		//add variable name to a list that will be consulted later
 		//to add type to each variable in the symbol table
-		parserUtils.variableList.add(((Token)$3.obj).getLiteralValue());
+		String varName = ((Token)$3.obj).getLiteralValue();
+		parserUtils.variableList.add(varName);
 	}
-	| ID {
-		parserUtils.variableList.add(((Token)$1.obj).getLiteralValue());
+	| ID COMMA ID{
+		String varName = ((Token)$1.obj).getLiteralValue();
+		parserUtils.variableList.add(varName);
+		varName = ((Token)$3.obj).getLiteralValue();
+		parserUtils.variableList.add(varName);
 	}
 	;
-functionDeclaration: FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList END SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FUNCTION ID  varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList END SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FUNCTION ID OPENPAREN varDeclaration  BEGIN varDeclarationList executionWReturnList END SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN  varDeclarationList executionWReturnList END SEMICOLON {
-		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList  SEMICOLON {
-		Error error = new Error(Error.TYPE_FATAL,"Missing END in function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+functionHeader: FUNCTION ID OPENPAREN {
+		//Set function name as the current context
+		String functionName = ((Token)$2.obj).getLiteralValue();
+		parserUtils.context = functionName;
+	}  singleVarDeclaration CLOSEPAREN {
+		Error error;
+		SymbolElement element = new SymbolElement();
+		String varNameWithContext = "";
+		String varName = ((Token)$5.obj).getLiteralValue();
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		String functionName = ((Token)$2.obj).getLiteralValue();
+		//add FUNCTION use to the function identifier
+		element = symbolTable.identify(functionName);
+		element.setUse("FUNC");
+		//check for function redeclaration
+		if(symbolTable.contains(functionName)) {
+			error = new Error(Error.TYPE_FATAL,"Function redeclartion", parserUtils.lexical.getLine());
+			parserUtils.errorHandler.addError(error);
+		}
+		//initialize intermediate code vector
+		parserUtils.intermediateCode.put(parserUtils.context.toUpperCase(), new ArrayList<String>());
+		varNameWithContext = parserUtils.context+"_"+varName;
+		element = symbolTable.identify(varNameWithContext);
+		
+		//set PARAMETER use to each identifier in the parameters declaration
+		element.setUse("PARAM");
+		parserUtils.variableList.clear();
+	};
+functionDeclaration: functionHeader BEGIN varDeclarationList executionWReturnList END SEMICOLON {
+		//once the function declaration is over, set the current context as main
+		parserUtils.context = "main";
 	}
 	;
 
@@ -124,17 +193,14 @@ executionWReturnList: executionWReturnList executionWReturn
 executionWReturn: execution
 	| ret
 
-execution: print  
-	| functionExecution
-	| iteration
-	| selection
-	| assign
+execution: print SEMICOLON  
+	| functionExecution SEMICOLON
+	| iteration SEMICOLON
+	| selection SEMICOLON
+	| assign SEMICOLON
 	;
 
-ret: RETURN OPENPAREN expression CLOSEPAREN SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Return execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
+ret: RETURN OPENPAREN expression CLOSEPAREN SEMICOLON 
 	| RETURN expression CLOSEPAREN SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
@@ -144,77 +210,94 @@ ret: RETURN OPENPAREN expression CLOSEPAREN SEMICOLON {
 		parserUtils.errorHandler.addError(error);
 	}
 	;
-print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Print execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| PRINT  CHARCHAIN CLOSEPAREN SEMICOLON {
+print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN
+	| PRINT CHARCHAIN CLOSEPAREN  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| PRINT OPENPAREN CHARCHAIN  SEMICOLON {
+	| PRINT OPENPAREN CHARCHAIN   {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
 
-functionExecution: ID OPENPAREN varList CLOSEPAREN SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Function execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+functionExecution: ID OPENPAREN ID CLOSEPAREN  {
+		Error error;
+		String parameterName = ((Token)$3.obj).getLiteralValue();
+		String parameterNameWContext = parserUtils.context+"_"+parameterName;
+		SymbolElement element = new SymbolElement();
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		//check if parameter is declared 
+		element = symbolTable.identify(parameterNameWContext);
+		if(!(element != null && element.getUse() != "FUNC")) {
+			error = new Error(Error.TYPE_FATAL,"Identifier "+parameterName+" not found.", parserUtils.lexical.getLine());
+			parserUtils.errorHandler.addError(error);
+		}
 	}
-	| ID varList CLOSEPAREN SEMICOLON {
+	| ID ID CLOSEPAREN SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| ID OPENPAREN varList SEMICOLON {
+	| ID OPENPAREN ID SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
-iteration: FOR OPENPAREN ID ASSIGN expression SEMICOLON ID COMPARATOR expression CLOSEPAREN declarationList executions SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Iteration execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+iteration: FOR OPENPAREN assign SEMICOLON condition CLOSEPAREN declarationList {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		//set the following index as the TRUE bifurcation
+		currentIntCodeVector.add(currentIntCodeVector.size()+1);
+		//save the index where the false bifurcation will be stored
+		parserUtils.falseBifurcationIndex = currentIntCodeVector.size();
+	}  executions {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		//set the end of the FOR block of statements as the FALSE bifurcation
+		currentIntCodeVector.add(parserUtils.falseBifurcationIndex,currentIntCodeVector.size());
 	}
-	| FOR  ID ASSIGN expression SEMICOLON ID COMPARATOR expression CLOSEPAREN declarationList executions SEMICOLON {
+	| FOR assign SEMICOLON condition CLOSEPAREN declarationList executions  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in iteration execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| FOR OPENPAREN ID ASSIGN expression SEMICOLON ID COMPARATOR expression  declarationList executions SEMICOLON {
+	| FOR OPENPAREN assign SEMICOLON condition  declarationList executions  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in iteration execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
-selection: IF  OPENPAREN condition CLOSEPAREN THEN block  ELSE  block SEMICOLON {
-		Error error = new Error(Error.TYPE_NOTIFICATION,"Selection execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| IF  condition CLOSEPAREN THEN block  ELSE  block SEMICOLON {
+selection: IF  OPENPAREN condition CLOSEPAREN THEN block  ELSE  block
+	| IF  condition CLOSEPAREN THEN block  ELSE  block  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| IF  OPENPAREN condition  THEN block  ELSE  block SEMICOLON {
+	| IF  OPENPAREN condition  THEN block  ELSE  block  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| IF  OPENPAREN condition   block  ELSE  block SEMICOLON {
+	| IF  OPENPAREN condition   block  ELSE  block  {
 		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| IF OPENPAREN condition CLOSEPAREN THEN block %prec IT SEMICOLON
-	| IF  condition CLOSEPAREN THEN block %prec IT SEMICOLON {
+	| IF OPENPAREN condition CLOSEPAREN THEN block %prec IT 
+	| IF  condition CLOSEPAREN THEN block %prec IT  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| IF OPENPAREN condition  THEN block %prec IT SEMICOLON {
+	| IF OPENPAREN condition  THEN block %prec IT  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| IF OPENPAREN condition CLOSEPAREN  block %prec IT SEMICOLON {
+	| IF OPENPAREN condition CLOSEPAREN  block %prec IT  {
 		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
-condition: expression COMPARATOR expression ;
+condition: expression COMPARATOR expression {
+		String comparatorSymbol = ((Token)$2.obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(comparatorSymbol);
+	};
 
 block: BEGIN declarationList executions END 
 	| BEGIN declarationList declaration END
@@ -238,22 +321,78 @@ block: BEGIN declarationList executions END
 	| declaration
 	| execution
 	;
-assign: ID ASSIGN expression SEMICOLON {
-	Error error = new Error(Error.TYPE_NOTIFICATION,"Assign execution ", parserUtils.lexical.getLine());
-	parserUtils.errorHandler.addError(error);
+assign: ID ASSIGN expression  {
+		Error error;
+		String varName = ((Token)$1.obj).getLiteralValue();
+		String assignSymbol = ((Token)$2.obj).getLiteralValue();
+		String context = parserUtils.context;
+		String parameterNameWContext = context+"_"+varName;
+		SymbolElement element = new SymbolElement();
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		//check if parameter is declared 
+		element = symbolTable.identify(parameterNameWContext);
+		if(!(element != null && element.getUse() != "FUNC")) {
+			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
+			parserUtils.errorHandler.addError(error);
+		} else {
+			currentIntCodeVector.add(varName);
+			currentIntCodeVector.add(assignSymbol);
+		}
 	};
-expression: expression PLUS term
-	| expression MINUS term
+expression: expression PLUS term {
+		String symbol = ((Token)$2.obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
+	| expression MINUS term {
+		String symbol = ((Token)$2.obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
 	| term
 	;
 
-term: term PRODUCT factor
-	| term DIVISION factor
+term: term PRODUCT factor {
+		String symbol = ((Token)$2.obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
+	| term DIVISION factor {
+		String symbol = ((Token)$2.obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
 	| factor
 	;
 
-factor: CTE
-	| ID
+factor: CTE {
+		String varName = ((Token)$1.obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(varName);
+	}
+	| ID {
+		Error error;
+		String varName = ((Token)$1.obj).getLiteralValue();
+		String context = parserUtils.context;
+		String parameterNameWContext = context+"_"+varName;
+		SymbolElement element = new SymbolElement();
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		//check if parameter is declared 
+		element = symbolTable.identify(parameterNameWContext);
+		if(!(element != null && element.getUse() != "FUNC")) {
+			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
+			parserUtils.errorHandler.addError(error);
+		} else {
+			currentIntCodeVector.add(varName);
+		}
+	}
 	;
 
 %%

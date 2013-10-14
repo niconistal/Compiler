@@ -12,6 +12,19 @@ public class SymbolElement {
 	protected String type;
 	protected String use;
 	protected String varType;
+	protected Object value;
+	
+	public SymbolElement(String type, Object value){
+		
+		this.type = type;
+		this.value = value;
+		
+	}
+	
+	public SymbolElement(){
+		type = "N/A";
+		value = null;
+	}
 	
 	public String getUse() {
 		return use;
@@ -28,21 +41,6 @@ public class SymbolElement {
 	public void setVarType(String varType) {
 		this.varType = varType;
 	}
-
-	protected Object value;
-	
-	public SymbolElement(String type, Object value){
-		
-		this.type = type;
-		this.value = value;
-		
-	}
-	
-	public SymbolElement(){
-		type = "N/A";
-		value = null;
-	}
-	
 	public void setType(String type){
 		this.type = type;
 	}
@@ -66,6 +64,6 @@ public class SymbolElement {
 		}else{
 			val = value.toString();
 		}
-		return "Type: "+type+" Value: "+val;
+		return "Type: "+type+" Value: "+val+" Use: "+use +" VarType: "+varType ;
 	}
 }

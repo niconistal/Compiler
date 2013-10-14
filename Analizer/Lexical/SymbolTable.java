@@ -46,9 +46,6 @@ public class SymbolTable {
 	public static final String RESERVED_WORD = "RESERVED";
 	
 	protected SymbolTable(){
-		
-		
-		
 		symbolTable = new HashMap<String,SymbolElement>();
 		
 		BufferedReader br = null;
@@ -94,15 +91,16 @@ public class SymbolTable {
 		symbolTable.put(idName.toUpperCase(),symbol);
 	
 	}
+	public void remove(String idName) {
+		symbolTable.remove(idName.toUpperCase());
+	}
 	/**
 	 * 
 	 * @param idName
 	 * @return
 	 */
 	public SymbolElement identify(String idName){
-		
 		return symbolTable.get(idName.toUpperCase());
-		
 	}
 	
 	public boolean contains(String idName){

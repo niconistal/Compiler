@@ -7,11 +7,13 @@ import Lexical.ErrorHandler;
 import Lexical.Error;
 import Lexical.SymbolTable;
 import java.util.ArrayList;
+import utils.PathContainer;
+import Lexical.SymbolElement;
 
 class parserUtils {
 	static ArrayList<String> variableList = new ArrayList<String>(); 
 	static ErrorHandler errorHandler = ErrorHandler.getInstance();
-	static LexicalAnalizer lexical;	
+	static LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());	
 }
 %}
 
@@ -46,9 +48,6 @@ class parserUtils {
 
 /* Grammar follows */
 %%
-start: program {
-	System.out.println("startiiing");
-};
 /* Program */
 program: declarationList
 		|declarationList executions
@@ -61,8 +60,11 @@ declarationList: declarationList declaration
 	| declaration
 	;
 
-declaration: varDeclaration
-	| functionDeclaration
+declaration: varDeclaration {
+		//get the list ready for the following variable declarations
+		parserUtils.variableList.clear();
+	}
+	| functionDeclaration 
 	;
 varDeclarationList: varDeclarationList varDeclaration
 	| varDeclaration
@@ -70,43 +72,54 @@ varDeclarationList: varDeclarationList varDeclaration
 varDeclaration: VARTYPE varList SEMICOLON {
 		Error error = new Error(Error.TYPE_NOTIFICATION,"Variable declaration ", parserUtils.lexical.getLine());
 		SymbolTable symbolTable = SymbolTable.getInstance();
+		SymbolElement element = new SymbolElement();
 		String literalTypeValue = ((Token)$1.obj).getLiteralValue();
+
 		parserUtils.errorHandler.addError(error);
 		//add type to each symbol table entryof the varList
 		for(String varName : parserUtils.variableList) {
-			symbolTable.identify(varName).setVarType(literalTypeValue);
+			element = symbolTable.identify(varName);
+			element.setVarType(literalTypeValue);
+			element.setUse("VAR");
 		}
-		//get the list ready for the following variable declarations
-		parserUtils.variableList.clear();
 
 	};
 varList: varList COMMA ID {
 		//add variable name to a list that will be consulted later
 		//to add type to each variable in the symbol table
-		parserUtils.variableList.add(((Token)$3.obj).getLiteralValue());
+		String varName = ((Token)$3.obj).getLiteralValue();
+		parserUtils.variableList.add(varName);
 	}
 	| ID {
-		parserUtils.variableList.add(((Token)$1.obj).getLiteralValue());
+		String varName = ((Token)$1.obj).getLiteralValue();
+		parserUtils.variableList.add(varName);
 	}
 	;
-functionDeclaration: FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList END SEMICOLON {
+functionHeader: FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN {
 		Error error = new Error(Error.TYPE_NOTIFICATION,"Function declaration ", parserUtils.lexical.getLine());
+		SymbolElement element = new SymbolElement();
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		String functionName = ((Token)$2.obj).getLiteralValue();
+
 		parserUtils.errorHandler.addError(error);
-	}
+		//set PARAMETER use to each identifier in the parameters declaration
+		for(String varName : parserUtils.variableList) {
+			element = symbolTable.identify(varName);
+			element.setUse("PARAM");
+		}
+		//add FUNCTION use to the function identifier
+		element = symbolTable.identify(functionName);
+		element.setUse("FUNC");
+		//get the list ready for the following variable declarations
+		parserUtils.variableList.clear();
+	};
+functionDeclaration: functionHeader BEGIN varDeclarationList executionWReturnList END SEMICOLON 
 	| FUNCTION ID  varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList END SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function declaration ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	| FUNCTION ID OPENPAREN varDeclaration  BEGIN varDeclarationList executionWReturnList END SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN  varDeclarationList executionWReturnList END SEMICOLON {
-		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in function declaration ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FUNCTION ID OPENPAREN varDeclaration CLOSEPAREN BEGIN varDeclarationList executionWReturnList  SEMICOLON {
-		Error error = new Error(Error.TYPE_FATAL,"Missing END in function declaration ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
