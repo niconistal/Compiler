@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import utils.PathContainer;
 import Lexical.SymbolElement;
 import java.util.HashMap;
+import java.util.HashSet;
 
 class parserUtils {
 	static ArrayList<String> variableList = new ArrayList<String>();
@@ -23,6 +24,10 @@ class parserUtils {
 	static long functionReturn;
 	//true if the function has returned explicitly
 	static boolean functionHasReturned;
+	//variable to handle the intermediate code generation of the FOR loop
+	static String forConditionVar;
+	//a stack to handle index handling in IF and FOR statements
+	static ArrayList<Integer> indexStack = new ArrayList<Integer>();
 }
 %}
 
@@ -224,15 +229,22 @@ print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN
 functionExecution: ID OPENPAREN ID CLOSEPAREN  {
 		Error error;
 		String parameterName = ((Token)$3.obj).getLiteralValue();
+		String functionName = ((Token)$1.obj).getLiteralValue();
 		String parameterNameWContext = parserUtils.context+"_"+parameterName;
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		//check if parameter is declared 
 		element = symbolTable.identify(parameterNameWContext);
 		if(!(element != null && element.getUse() != "FUNC")) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+parameterName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
+		//add function call to the intermediate code vector
+		currentIntCodeVector.add(functionName);
+		currentIntCodeVector.add("[CALL]");
+		currentIntCodeVector.add("rtn");
 	}
 	| ID ID CLOSEPAREN SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
@@ -243,54 +255,104 @@ functionExecution: ID OPENPAREN ID CLOSEPAREN  {
 		parserUtils.errorHandler.addError(error);
 	}
 	;
-iteration: FOR OPENPAREN assign SEMICOLON condition CLOSEPAREN declarationList {
+iteration: FOR OPENPAREN assign SEMICOLON {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		//set the following index as the TRUE bifurcation
-		currentIntCodeVector.add(currentIntCodeVector.size()+1);
+		String forConditionVar = ((Token)$3.obj).getLiteralValue();
+		parserUtils.forConditionVar = forConditionVar;
+		parserUtils.indexStack.add(currentIntCodeVector.size());
+	}condition CLOSEPAREN declarationList {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+
 		//save the index where the false bifurcation will be stored
-		parserUtils.falseBifurcationIndex = currentIntCodeVector.size();
+		currentIntCodeVector.add("PLACEHOLDER");
+		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
+		currentIntCodeVector.add("[BF]");
 	}  executions {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		//set the end of the FOR block of statements as the FALSE bifurcation
-		currentIntCodeVector.add(parserUtils.falseBifurcationIndex,currentIntCodeVector.size());
-	}
-	| FOR assign SEMICOLON condition CLOSEPAREN declarationList executions  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in iteration execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| FOR OPENPAREN assign SEMICOLON condition  declarationList executions  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in iteration execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
+		Integer falseBifurcationIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
+		String forReevaluationIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1).toString();
+		String falseBifurcationDirection;
+		//increment the condition variable
+		currentIntCodeVector.add(parserUtils.forConditionVar);
+		currentIntCodeVector.add(parserUtils.forConditionVar);
+		currentIntCodeVector.add("1");
+		currentIntCodeVector.add("+");
+		currentIntCodeVector.add("=");
+		//Add inconditional jump to the FOR reevaluation index
+		currentIntCodeVector.add(forReevaluationIndex);
+		currentIntCodeVector.add("[JMP]");
+		//Set the end of the FOR statement as the false bifurcation direction
+		falseBifurcationDirection = Integer.toString(currentIntCodeVector.size());
+		currentIntCodeVector.set(falseBifurcationIndex,falseBifurcationDirection);
+	};
+	//TODO uncomment fowolling rules when parsing conflicts are resolved
+
+	// | FOR assign SEMICOLON condition CLOSEPAREN declarationList executions  {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in iteration execution  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | FOR OPENPAREN assign SEMICOLON condition  declarationList executions  {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in iteration execution ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
 	;
-selection: IF  OPENPAREN condition CLOSEPAREN THEN block  ELSE  block
-	| IF  condition CLOSEPAREN THEN block  ELSE  block  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+selection: IF  OPENPAREN condition CLOSEPAREN THEN {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		//save the index where the false bifurcation will be stored
+		currentIntCodeVector.add("PLACEHOLDER");
+		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
+		currentIntCodeVector.add("[BF]");		
+
+	} block {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String elseBlockDirection = Integer.toString(currentIntCodeVector.size()+2);
+		Integer elseBlockIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
+		currentIntCodeVector.set(elseBlockIndex,elseBlockDirection);
+		//save the index where the end of else block will be stored
+		currentIntCodeVector.add("PLACEHOLDER");
+		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
+		currentIntCodeVector.add("[JMP]");
+	} ELSE block {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String endBlockDirection = Integer.toString(currentIntCodeVector.size());
+		Integer endBlockIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
+		currentIntCodeVector.set(endBlockIndex,endBlockDirection);
 	}
-	| IF  OPENPAREN condition  THEN block  ELSE  block  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| IF  OPENPAREN condition   block  ELSE  block  {
-		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| IF OPENPAREN condition CLOSEPAREN THEN block %prec IT 
-	| IF  condition CLOSEPAREN THEN block %prec IT  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| IF OPENPAREN condition  THEN block %prec IT  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-	| IF OPENPAREN condition CLOSEPAREN  block %prec IT  {
-		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
+
+
+	//TODO uncomment these lines when parsing conflicts are resolved
+
+	// | IF  condition CLOSEPAREN THEN block  ELSE  block  {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | IF  OPENPAREN condition  THEN block  ELSE  block  {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | IF  OPENPAREN condition   block  ELSE  block  {
+	// 	Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | IF OPENPAREN condition CLOSEPAREN THEN block %prec IT 
+	// | IF  condition CLOSEPAREN THEN block %prec IT  {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | IF OPENPAREN condition  THEN block %prec IT  {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | IF OPENPAREN condition CLOSEPAREN  block %prec IT  {
+	// 	Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
 	;
 condition: expression COMPARATOR expression {
 		String comparatorSymbol = ((Token)$2.obj).getLiteralValue();
@@ -318,10 +380,16 @@ block: BEGIN declarationList executions END
 		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
+	| BEGIN END
 	| declaration
 	| execution
 	;
-assign: ID ASSIGN expression  {
+assign: ID ASSIGN {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String varName = ((Token)$1.obj).getLiteralValue();
+		currentIntCodeVector.add(varName);
+	}expression  {
 		Error error;
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String assignSymbol = ((Token)$2.obj).getLiteralValue();
@@ -330,13 +398,12 @@ assign: ID ASSIGN expression  {
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		//check if parameter is declared 
+		//check if identifier is declared 
 		element = symbolTable.identify(parameterNameWContext);
 		if(!(element != null && element.getUse() != "FUNC")) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
-			currentIntCodeVector.add(varName);
 			currentIntCodeVector.add(assignSymbol);
 		}
 	};
@@ -380,19 +447,31 @@ factor: CTE {
 		Error error;
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String context = parserUtils.context;
-		String parameterNameWContext = context+"_"+varName;
+		HashSet<String> contextList = new HashSet<String>();
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String parameterNameWContext;
+		boolean found = false;
+		contextList.add(context);
+		contextList.add("MAIN");
+		for(String cont: contextList) {
+			parameterNameWContext= cont+"_"+varName;
+			element = symbolTable.identify(parameterNameWContext);
+			if(element != null && element.getUse() != "FUNC") {
+				found = true;
+				break;
+			}
+		}
 		//check if parameter is declared 
-		element = symbolTable.identify(parameterNameWContext);
-		if(!(element != null && element.getUse() != "FUNC")) {
+		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
 			currentIntCodeVector.add(varName);
 		}
 	}
+	| functionExecution
 	;
 
 %%

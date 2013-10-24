@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import utils.PathContainer;
 import Lexical.SymbolElement;
 import java.util.HashMap;
+import java.util.HashSet;
 
 class parserUtils {
 	static ArrayList<String> variableList = new ArrayList<String>();
@@ -41,8 +42,12 @@ class parserUtils {
 	static long functionReturn;
 	/*true if the function has returned explicitly*/
 	static boolean functionHasReturned;
+	/*variable to handle the intermediate code generation of the FOR loop*/
+	static String forConditionVar;
+	/*a stack to handle index handling in IF and FOR statements*/
+	static ArrayList<Integer> indexStack = new ArrayList<Integer>();
 }
-//#line 43 "Parser.java"
+//#line 48 "Parser.java"
 
 
 
@@ -211,149 +216,136 @@ final static short yylhs[] = {                           -1,
     8,    9,    6,    6,   10,   10,   12,   11,    7,    4,
     4,   13,   13,   15,   15,   14,   14,   14,   14,   14,
    16,   16,   16,   17,   17,   17,   18,   18,   18,   24,
-   19,   19,   19,   20,   20,   20,   20,   20,   20,   20,
-   20,   23,   25,   25,   25,   25,   25,   25,   25,   25,
-   25,   21,   22,   22,   22,   26,   26,   26,   27,   27,
+   25,   19,   27,   28,   20,   23,   26,   26,   26,   26,
+   26,   26,   26,   26,   26,   26,   29,   21,   22,   22,
+   22,   30,   30,   30,   31,   31,   31,
 };
 final static short yylen[] = {                            2,
     0,    2,    1,    2,    1,    2,    1,    1,    1,    2,
     1,    3,    3,    1,    3,    3,    0,    6,    6,    2,
     1,    2,    1,    1,    1,    2,    2,    2,    2,    2,
     5,    4,    4,    4,    3,    3,    4,    4,    4,    0,
-    9,    7,    7,    8,    7,    7,    6,    6,    5,    5,
-    5,    3,    4,    4,    3,    3,    4,    3,    3,    1,
-    1,    3,    3,    3,    1,    3,    3,    1,    1,    1,
+    0,   10,    0,    0,   10,    3,    4,    4,    3,    3,
+    4,    3,    3,    2,    1,    1,    0,    4,    3,    3,
+    1,    3,    3,    1,    1,    1,    1,
 };
 final static short yydefred[] = {                         1,
     0,    0,    0,    0,    0,    0,    0,    0,    2,    0,
     0,    7,    8,    9,   14,    0,   21,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,   70,   69,    0,    0,    0,    0,   68,
-    0,    6,   20,    0,   26,   27,   28,   29,   30,   12,
-    0,   13,    0,   35,    0,    0,    0,    0,   17,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,   11,    0,
-   16,   15,   34,   38,   39,   37,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,   66,   67,    0,   10,    0,   24,   23,   25,    0,
-    0,    0,    0,    0,    0,    0,    0,   51,    0,    0,
-    0,    0,    0,    0,    0,   22,    0,   18,    0,    0,
-    0,    0,    0,    0,    0,    0,   55,   58,   47,    0,
-    0,    0,   19,    0,    0,    0,   53,   54,   57,   46,
-    0,   45,   33,    0,   32,    0,   44,   31,    0,
+    0,    0,    0,    0,    0,    0,    0,   57,    0,    0,
+    0,    0,    0,    6,   20,    0,   26,   27,   28,   29,
+   30,   12,    0,   13,    0,   35,    0,    0,    0,    0,
+   17,    0,    0,    0,   65,   67,    0,    0,    0,   64,
+   11,    0,   16,   15,   34,   38,    0,   39,   37,    0,
+   40,    0,    0,    0,    0,    0,    0,    0,   10,    0,
+   24,   23,   25,    0,    0,    0,    0,    0,    0,   43,
+   62,   63,    0,    0,    0,   22,    0,   18,    0,    0,
+    0,    0,   19,    0,    0,    0,    0,    0,    0,   44,
+   33,    0,   32,    0,   54,    0,    0,    0,    0,    0,
+   31,    0,    0,    0,    0,   49,   52,    0,    0,   47,
+   48,   51,   45,
 };
 final static short yydgoto[] = {                          1,
-    9,    2,   83,   84,   85,   13,   14,   70,   15,   24,
-   16,   77,   96,   86,   98,   99,   18,   19,   20,   21,
-   22,   37,   38,  146,   87,   39,   40,
+    9,    2,  106,  107,   12,   13,   14,   62,   15,   24,
+   16,   70,   80,   17,   82,   83,   18,   19,   20,   21,
+   22,   57,   58,   86,  122,  110,  100,  120,   49,   59,
+   60,
 };
 final static short yysindex[] = {                         0,
-    0,   22, -252, -236, -248, -238, -240, -202,    0,   22,
- -105,    0,    0,    0,    0, -246,    0, -225, -216, -213,
- -209, -206, -172, -164, -180, -148, -145, -143, -186, -138,
- -128, -121, -124,    0,    0, -143, -187, -118, -157,    0,
- -105,    0,    0,  -93,    0,    0,    0,    0,    0,    0,
-  -81,    0,  -74,    0,  -88,  -73, -136, -223,    0,  -66,
- -143, -188, -143, -143, -143,  -61, -143, -143,    0, -215,
-    0,    0,    0,    0,    0,    0,  -69, -143,  -55,   22,
-   10,   -5, -233, -105,    0,    0,  -43, -136, -157, -157,
-   10,    0,    0, -175,    0, -204,    0,    0,    0,  -50,
-  -41, -242, -233,   22, -105,  -38,   10,    0,  -24,  -22,
-   10,  -35, -143, -171,  -26,    0,  -17,    0, -233,   22,
-   22,  -42,  -19,  -16,   10,  -20,    0,    0,    0,   10,
- -179,  -13,    0, -233, -105, -105,    0,    0,    0,    0,
-   10,    0,    0,  -11,    0, -105,    0,    0, -105,
+    0, -104, -253, -223, -247, -229, -212, -207,    0, -104,
+ -108,    0,    0,    0,    0, -194,    0, -213, -195, -190,
+ -188, -168, -199, -185, -183, -152, -143,    0, -136, -141,
+ -123, -164, -108,    0,    0, -119,    0,    0,    0,    0,
+    0,    0, -120,    0, -115,    0, -130, -125, -164, -215,
+    0, -112, -101, -245,    0,    0, -201, -107, -180,    0,
+    0, -248,    0,    0,    0,    0, -175,    0,    0,  -82,
+    0, -164, -164, -164,  -87, -164, -164, -224,    0, -243,
+    0,    0,    0,  -71,  -84, -164, -175, -180, -180,    0,
+    0,    0, -164,  -72,  -79,    0,  -78,    0,  -77, -128,
+  -75,  -66,    0, -244, -116, -244, -108,    0,    0,    0,
+    0,  -65,    0, -244,    0, -104, -108,  -56,  -55,  -60,
+    0, -108,  -81,  -53,  -52,    0,    0, -128, -108,    0,
+    0,    0,    0,
 };
 final static short yyrindex[] = {                         0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,  256,
-  262,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,  213,
+  214,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0, -107,    0,
-  265,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,   -6,    0,   -1,    0,    0,    0,
+    0,    0,  215,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,  -54,    0,    0,    0,
+    0,    0,    0, -151,    0,    0,    0,    0, -110,    0,
+    0,    0,    0,    0,    0,    0,  -51,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0, -183, -103,  -96,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0, -235, -133,    0,  -44,  -86,  -65,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,  -17,    0,    0, -217,  -84,
-    0, -206,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,  -29,  -21,    0, -209,    0,    0,    0,    0,
-    0,    0,    0,  -63,    2,    4,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    5,
+    0,    0,    0,    0,    0,    0,    0, -231, -187,    0,
+    0,    0,    0,  -73,    0,    0,    0, -217,  -69,    0,
+    0,    0,    0, -204, -179,    0,    0,    0,  -78,    0,
+    0,    0,    0,
 };
 final static short yygindex[] = {                         0,
-    0,    0,   12,    3,    8,  -40,    0,    0,  193,    0,
-    0,    0,    0,   -2,  186,    0,    0,    0,    0,    0,
-    9,  -27,  -30,    0,  -79,   81,   99,
+    0,    0,    1,   -2,   -6,  -29,    0,    0,  146,    0,
+    0,    0,    0,  -10,  137,    0,    0,  -30,    0,    0,
+  188,  -44,  134,    0,    0,   94,    0,    0,    0,   38,
+   40,
 };
-final static int YYTABLESIZE=290;
+final static int YYTABLESIZE=222;
 static short yytable[];
 static { yytable();}
 static void yytable(){
-yytable = new short[]{                         17,
-   57,  106,  108,   69,   11,   62,   23,   17,   43,   12,
-   27,  112,   41,   10,    3,   33,   44,   42,   31,    6,
-   30,    7,   28,    3,   25,   29,    7,  126,    6,   95,
-   79,  129,  119,   32,   60,   88,   60,   26,   43,    6,
-   60,    3,    4,    5,    6,  140,   45,  102,   75,    7,
-  142,   76,    8,    4,    5,   46,   34,   35,   47,  115,
-    7,  147,   48,    8,   94,   49,  114,   97,    3,    4,
-    5,   36,   58,    6,   80,   94,    7,   17,   63,    8,
-   81,  110,  105,   34,   35,  131,   82,   12,   64,   65,
-  109,  104,  143,   97,   54,  144,   64,   65,  113,   50,
-   51,   17,  124,  132,   64,   65,  122,   52,   53,   12,
-   12,  123,   55,  120,  121,   34,   35,   17,   17,   43,
-   67,   68,  135,  136,   21,   21,   12,   42,   42,   56,
-  134,   21,   43,   43,   21,   59,   61,   31,   61,   64,
-   65,   42,   28,   17,   89,   90,   43,   61,  149,   65,
-   65,   65,    4,    5,   65,   65,   66,   65,   65,    7,
-   65,   65,    8,    3,   65,   92,   93,   65,   65,   65,
-   63,   63,   63,   20,   20,   63,   63,   71,   63,   63,
-   20,   63,   63,   20,   72,   63,   73,  100,   63,   63,
-   63,   64,   64,   64,   40,   40,   64,   64,   74,   64,
-   64,   40,   64,   64,   40,   78,   64,   91,  117,   64,
-   64,   64,   52,   52,   52,    4,    5,   52,   52,  103,
-   52,  137,    7,   52,   52,    8,  111,    6,    6,    6,
-   52,  125,    6,  118,  130,    6,   20,   20,    6,  127,
-   56,  128,   56,   20,  138,  133,   20,  139,   59,  141,
-   59,    3,    4,    5,   50,    3,    6,   80,  145,    7,
-  148,    5,    8,  107,    4,   36,    3,    4,    5,  101,
-   62,    6,   80,   43,    7,   42,   41,    8,    3,    4,
-    5,  116,    0,    6,    0,    0,    7,    0,    0,    8,
+yytable = new short[]{                         11,
+   35,   56,   10,   34,   67,   23,   61,   33,    3,    4,
+    5,   27,    3,   27,    4,    5,    7,    6,   56,    8,
+   95,    7,   35,   28,    8,    7,   29,   87,   29,   30,
+    7,   78,   79,   94,   54,   55,   78,   25,   55,    6,
+   55,   56,   56,   56,    6,   56,   56,   56,  101,   93,
+   26,   81,    6,    6,    6,   56,   68,    6,   37,   69,
+    6,   31,   56,    6,   72,   50,   32,   50,   36,   81,
+   21,   21,   42,   43,   73,   74,   38,   21,   20,   20,
+   21,   39,   56,   40,   56,   20,   44,   45,   20,  109,
+   53,   46,   53,  108,   54,   55,  119,   76,   77,  118,
+   73,   74,  117,   41,  114,  116,  125,   34,   47,  124,
+   88,   89,   35,  123,   66,   91,   92,  109,   35,  129,
+   66,  108,   50,   66,   66,   66,   66,   66,    3,    4,
+    5,   48,   51,    6,  105,   52,    7,    3,   63,    8,
+    3,    4,    5,   64,   65,    6,   66,  115,    7,    4,
+    5,    8,    3,    4,    5,   61,    7,    6,   28,    8,
+    7,   61,   59,    8,   61,   61,   61,   75,   59,   60,
+   71,   59,   59,   59,   84,   60,    4,    5,   60,   60,
+   60,   90,  130,    7,   41,   41,    8,   97,   20,   20,
+   98,   41,  103,   42,   41,   20,  111,  104,   20,  112,
+   73,   74,  102,   73,   74,  113,  121,  126,  127,  128,
+  131,  132,    3,    5,    4,   85,   96,   36,   53,   99,
+   58,  133,
 };
 }
 static short yycheck[];
 static { yycheck(); }
 static void yycheck() {
 yycheck = new short[] {                          2,
-   28,   81,   82,   44,    2,   36,  259,   10,   11,    2,
-  259,   91,   10,    2,  257,    7,  263,   10,  259,  262,
-  259,  257,  271,  257,  261,  274,  262,  107,  262,   70,
-   61,  111,  275,  274,  270,   63,  272,  274,   41,  257,
-   32,  257,  258,  259,  262,  125,  272,   78,  272,  265,
-  130,  275,  268,  258,  259,  272,  259,  260,  272,  264,
-  265,  141,  272,  268,  280,  272,   94,   70,  257,  258,
-  259,  274,  259,  262,  263,  280,  265,   80,  266,  268,
-  269,   84,   80,  259,  260,  113,  275,   80,  276,  277,
-   83,   80,  272,   96,  275,  275,  276,  277,  274,  272,
-  273,  104,  105,  275,  276,  277,  104,  272,  273,  102,
-  103,  104,  261,  102,  103,  259,  260,  120,  121,  122,
-  278,  279,  120,  121,  258,  259,  119,  120,  121,  275,
-  119,  265,  135,  136,  268,  274,  270,  259,  272,  276,
-  277,  134,  271,  146,   64,   65,  149,  272,  146,  257,
-  258,  259,  258,  259,  262,  263,  275,  265,  266,  265,
-  268,  269,  268,  257,  272,   67,   68,  275,  276,  277,
-  257,  258,  259,  258,  259,  262,  263,  259,  265,  266,
-  265,  268,  269,  268,  259,  272,  275,  257,  275,  276,
-  277,  257,  258,  259,  258,  259,  262,  263,  272,  265,
-  266,  265,  268,  269,  268,  272,  272,  269,  259,  275,
-  276,  277,  257,  258,  259,  258,  259,  262,  263,  275,
-  265,  264,  265,  268,  269,  268,  270,  257,  258,  259,
-  275,  270,  262,  275,  270,  265,  258,  259,  268,  264,
-  270,  264,  272,  265,  264,  272,  268,  264,  270,  270,
-  272,  257,  258,  259,  272,    0,  262,  263,  272,  265,
-  272,    0,  268,  269,    0,  272,  257,  258,  259,   77,
-  272,  262,  263,  272,  265,  272,  272,  268,  257,  258,
-  259,   96,   -1,  262,   -1,   -1,  265,   -1,   -1,  268,
+   11,   32,    2,   10,   49,  259,   36,   10,  257,  258,
+  259,  259,  257,  259,  258,  259,  265,  262,   49,  268,
+  264,  265,   33,  271,  268,  257,  274,   72,  274,  259,
+  262,  280,   62,   78,  259,  260,  280,  261,  270,  257,
+  272,   72,   73,   74,  262,   76,   77,   78,   93,  274,
+  274,   62,  257,  258,  259,   86,  272,  262,  272,  275,
+  265,  274,   93,  268,  266,  270,  274,  272,  263,   80,
+  258,  259,  272,  273,  276,  277,  272,  265,  258,  259,
+  268,  272,  270,  272,  272,  265,  272,  273,  268,  100,
+  270,  275,  272,  100,  259,  260,  107,  278,  279,  106,
+  276,  277,  105,  272,  104,  105,  117,  114,  261,  116,
+   73,   74,  123,  116,  266,   76,   77,  128,  129,  122,
+  272,  128,  259,  275,  276,  277,  278,  279,  257,  258,
+  259,  275,  274,  262,  263,  259,  265,  257,  259,  268,
+  257,  258,  259,  259,  275,  262,  272,  264,  265,  258,
+  259,  268,  257,  258,  259,  266,  265,  262,  271,  268,
+  265,  272,  266,  268,  275,  276,  277,  275,  272,  266,
+  272,  275,  276,  277,  257,  272,  258,  259,  275,  276,
+  277,  269,  264,  265,  258,  259,  268,  259,  258,  259,
+  275,  265,  272,  272,  268,  265,  272,  275,  268,  275,
+  276,  277,  275,  276,  277,  272,  272,  264,  264,  270,
+  264,  264,    0,    0,    0,   70,   80,  272,   31,   86,
+  272,  128,
 };
 }
 final static short YYFINAL=1;
@@ -422,17 +414,11 @@ final static String yyrule[] = {
 "functionExecution : ID ID CLOSEPAREN SEMICOLON",
 "functionExecution : ID OPENPAREN ID SEMICOLON",
 "$$3 :",
-"iteration : FOR OPENPAREN assign SEMICOLON condition CLOSEPAREN declarationList $$3 executions",
-"iteration : FOR assign SEMICOLON condition CLOSEPAREN declarationList executions",
-"iteration : FOR OPENPAREN assign SEMICOLON condition declarationList executions",
-"selection : IF OPENPAREN condition CLOSEPAREN THEN block ELSE block",
-"selection : IF condition CLOSEPAREN THEN block ELSE block",
-"selection : IF OPENPAREN condition THEN block ELSE block",
-"selection : IF OPENPAREN condition block ELSE block",
-"selection : IF OPENPAREN condition CLOSEPAREN THEN block",
-"selection : IF condition CLOSEPAREN THEN block",
-"selection : IF OPENPAREN condition THEN block",
-"selection : IF OPENPAREN condition CLOSEPAREN block",
+"$$4 :",
+"iteration : FOR OPENPAREN assign SEMICOLON $$3 condition CLOSEPAREN declarationList $$4 executions",
+"$$5 :",
+"$$6 :",
+"selection : IF OPENPAREN condition CLOSEPAREN THEN $$5 block $$6 ELSE block",
 "condition : expression COMPARATOR expression",
 "block : BEGIN declarationList executions END",
 "block : BEGIN declarationList declaration END",
@@ -441,9 +427,11 @@ final static String yyrule[] = {
 "block : BEGIN executions execution END",
 "block : executions execution END",
 "block : BEGIN executions execution",
+"block : BEGIN END",
 "block : declaration",
 "block : execution",
-"assign : ID ASSIGN expression",
+"$$7 :",
+"assign : ID ASSIGN $$7 expression",
 "expression : expression PLUS term",
 "expression : expression MINUS term",
 "expression : term",
@@ -452,9 +440,10 @@ final static String yyrule[] = {
 "term : factor",
 "factor : CTE",
 "factor : ID",
+"factor : functionExecution",
 };
 
-//#line 392 "./grammar.txt"
+//#line 478 "./grammar.txt"
 
 String ins;
 StringTokenizer st;
@@ -531,7 +520,7 @@ int yylex() {
 	}
 	return -1;
 }
-//#line 463 "Parser.java"
+//#line 452 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -686,14 +675,14 @@ boolean doaction;
       {
 //########## USER-SUPPLIED ACTIONS ##########
 case 1:
-//#line 62 "./grammar.txt"
+//#line 67 "./grammar.txt"
 {
 	/*initialize the Main intermediate code vector*/
 	parserUtils.intermediateCode.put("MAIN", new ArrayList<String>());
 }
 break;
 case 12:
-//#line 84 "./grammar.txt"
+//#line 89 "./grammar.txt"
 {
 		Error error;
 		String varName = ((Token)val_peek(1).obj).getLiteralValue();
@@ -721,7 +710,7 @@ case 12:
 	}
 break;
 case 13:
-//#line 110 "./grammar.txt"
+//#line 115 "./grammar.txt"
 {
 		Error error;
 		SymbolTable symbolTable = SymbolTable.getInstance();
@@ -749,7 +738,7 @@ case 13:
 	}
 break;
 case 15:
-//#line 137 "./grammar.txt"
+//#line 142 "./grammar.txt"
 {
 		/*add variable name to a list that will be consulted later*/
 		/*to add type to each variable in the symbol table*/
@@ -758,7 +747,7 @@ case 15:
 	}
 break;
 case 16:
-//#line 143 "./grammar.txt"
+//#line 148 "./grammar.txt"
 {
 		String varName = ((Token)val_peek(2).obj).getLiteralValue();
 		parserUtils.variableList.add(varName);
@@ -767,7 +756,7 @@ case 16:
 	}
 break;
 case 17:
-//#line 150 "./grammar.txt"
+//#line 155 "./grammar.txt"
 {
 		/*Set function name as the current context*/
 		String functionName = ((Token)val_peek(1).obj).getLiteralValue();
@@ -775,7 +764,7 @@ case 17:
 	}
 break;
 case 18:
-//#line 154 "./grammar.txt"
+//#line 159 "./grammar.txt"
 {
 		Error error;
 		SymbolElement element = new SymbolElement();
@@ -802,137 +791,159 @@ case 18:
 	}
 break;
 case 19:
-//#line 178 "./grammar.txt"
+//#line 183 "./grammar.txt"
 {
 		/*once the function declaration is over, set the current context as main*/
 		parserUtils.context = "main";
 	}
 break;
 case 32:
-//#line 204 "./grammar.txt"
+//#line 209 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 33:
-//#line 208 "./grammar.txt"
+//#line 213 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 35:
-//#line 214 "./grammar.txt"
+//#line 219 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 36:
-//#line 218 "./grammar.txt"
+//#line 223 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 37:
-//#line 224 "./grammar.txt"
+//#line 229 "./grammar.txt"
 {
 		Error error;
 		String parameterName = ((Token)val_peek(1).obj).getLiteralValue();
+		String functionName = ((Token)val_peek(3).obj).getLiteralValue();
 		String parameterNameWContext = parserUtils.context+"_"+parameterName;
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		/*check if parameter is declared */
 		element = symbolTable.identify(parameterNameWContext);
 		if(!(element != null && element.getUse() != "FUNC")) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+parameterName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
+		/*add function call to the intermediate code vector*/
+		currentIntCodeVector.add(functionName);
+		currentIntCodeVector.add("[CALL]");
+		currentIntCodeVector.add("rtn");
 	}
 break;
 case 38:
-//#line 237 "./grammar.txt"
+//#line 249 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 39:
-//#line 241 "./grammar.txt"
+//#line 253 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 40:
-//#line 246 "./grammar.txt"
+//#line 258 "./grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		/*set the following index as the TRUE bifurcation*/
-		/* currentIntCodeVector.add()*/
+		String forConditionVar = ((Token)val_peek(1).obj).getLiteralValue();
+		parserUtils.forConditionVar = forConditionVar;
+		parserUtils.indexStack.add(currentIntCodeVector.size());
+	}
+break;
+case 41:
+//#line 264 "./grammar.txt"
+{
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+
+		/*save the index where the false bifurcation will be stored*/
+		currentIntCodeVector.add("PLACEHOLDER");
+		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
+		currentIntCodeVector.add("[BF]");
 	}
 break;
 case 42:
-//#line 252 "./grammar.txt"
+//#line 272 "./grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in iteration execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		Integer falseBifurcationIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
+		String forReevaluationIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1).toString();
+		String falseBifurcationDirection;
+		/*increment the condition variable*/
+		currentIntCodeVector.add(parserUtils.forConditionVar);
+		currentIntCodeVector.add(parserUtils.forConditionVar);
+		currentIntCodeVector.add("1");
+		currentIntCodeVector.add("+");
+		currentIntCodeVector.add("=");
+		/*Add inconditional jump to the FOR reevaluation index*/
+		currentIntCodeVector.add(forReevaluationIndex);
+		currentIntCodeVector.add("[JMP]");
+		/*Set the end of the FOR statement as the false bifurcation direction*/
+		falseBifurcationDirection = Integer.toString(currentIntCodeVector.size());
+		currentIntCodeVector.set(falseBifurcationIndex,falseBifurcationDirection);
 	}
 break;
 case 43:
-//#line 256 "./grammar.txt"
+//#line 302 "./grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in iteration execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		/*save the index where the false bifurcation will be stored*/
+		currentIntCodeVector.add("PLACEHOLDER");
+		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
+		currentIntCodeVector.add("[BF]");		
+
+	}
+break;
+case 44:
+//#line 310 "./grammar.txt"
+{
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String elseBlockDirection = Integer.toString(currentIntCodeVector.size()+2);
+		Integer elseBlockIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
+		currentIntCodeVector.set(elseBlockIndex,elseBlockDirection);
+		/*save the index where the end of else block will be stored*/
+		currentIntCodeVector.add("PLACEHOLDER");
+		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
+		currentIntCodeVector.add("[JMP]");
 	}
 break;
 case 45:
-//#line 262 "./grammar.txt"
+//#line 320 "./grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String endBlockDirection = Integer.toString(currentIntCodeVector.size());
+		Integer endBlockIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
+		currentIntCodeVector.set(endBlockIndex,endBlockDirection);
 	}
 break;
 case 46:
-//#line 266 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 47:
-//#line 270 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 49:
-//#line 275 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 50:
-//#line 279 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 51:
-//#line 283 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in selection execution  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 52:
-//#line 288 "./grammar.txt"
+//#line 357 "./grammar.txt"
 {
 		String comparatorSymbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -940,58 +951,93 @@ case 52:
 		currentIntCodeVector.add(comparatorSymbol);
 	}
 break;
-case 55:
-//#line 297 "./grammar.txt"
+case 49:
+//#line 366 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
-case 56:
-//#line 301 "./grammar.txt"
+case 50:
+//#line 370 "./grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
+	}
+break;
+case 52:
+//#line 375 "./grammar.txt"
+{
+		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+break;
+case 53:
+//#line 379 "./grammar.txt"
+{
+		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+break;
+case 57:
+//#line 387 "./grammar.txt"
+{
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String varName = ((Token)val_peek(1).obj).getLiteralValue();
+		currentIntCodeVector.add(varName);
 	}
 break;
 case 58:
-//#line 306 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 59:
-//#line 310 "./grammar.txt"
-{
-		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
-break;
-case 62:
-//#line 317 "./grammar.txt"
+//#line 392 "./grammar.txt"
 {
 		Error error;
-		String varName = ((Token)val_peek(2).obj).getLiteralValue();
-		String assignSymbol = ((Token)val_peek(1).obj).getLiteralValue();
+		String varName = ((Token)val_peek(3).obj).getLiteralValue();
+		String assignSymbol = ((Token)val_peek(2).obj).getLiteralValue();
 		String context = parserUtils.context;
 		String parameterNameWContext = context+"_"+varName;
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		/*check if parameter is declared */
+		/*check if identifier is declared */
 		element = symbolTable.identify(parameterNameWContext);
 		if(!(element != null && element.getUse() != "FUNC")) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
-			currentIntCodeVector.add(varName);
 			currentIntCodeVector.add(assignSymbol);
 		}
 	}
 break;
+case 59:
+//#line 410 "./grammar.txt"
+{
+		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
+break;
+case 60:
+//#line 416 "./grammar.txt"
+{
+		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
+break;
+case 62:
+//#line 425 "./grammar.txt"
+{
+		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add(symbol);
+	}
+break;
 case 63:
-//#line 336 "./grammar.txt"
+//#line 431 "./grammar.txt"
 {
 		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -999,35 +1045,8 @@ case 63:
 		currentIntCodeVector.add(symbol);
 	}
 break;
-case 64:
-//#line 342 "./grammar.txt"
-{
-		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
-		String context = parserUtils.context;
-		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		currentIntCodeVector.add(symbol);
-	}
-break;
-case 66:
-//#line 351 "./grammar.txt"
-{
-		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
-		String context = parserUtils.context;
-		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		currentIntCodeVector.add(symbol);
-	}
-break;
-case 67:
-//#line 357 "./grammar.txt"
-{
-		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
-		String context = parserUtils.context;
-		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		currentIntCodeVector.add(symbol);
-	}
-break;
-case 69:
-//#line 366 "./grammar.txt"
+case 65:
+//#line 440 "./grammar.txt"
 {
 		String varName = ((Token)val_peek(0).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1035,19 +1054,30 @@ case 69:
 		currentIntCodeVector.add(varName);
 	}
 break;
-case 70:
-//#line 372 "./grammar.txt"
+case 66:
+//#line 446 "./grammar.txt"
 {
 		Error error;
 		String varName = ((Token)val_peek(0).obj).getLiteralValue();
 		String context = parserUtils.context;
-		String parameterNameWContext = context+"_"+varName;
+		HashSet<String> contextList = new HashSet<String>();
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String parameterNameWContext;
+		boolean found = false;
+		contextList.add(context);
+		contextList.add("MAIN");
+		for(String cont: contextList) {
+			parameterNameWContext= cont+"_"+varName;
+			element = symbolTable.identify(parameterNameWContext);
+			if(element != null && element.getUse() != "FUNC") {
+				found = true;
+				break;
+			}
+		}
 		/*check if parameter is declared */
-		element = symbolTable.identify(parameterNameWContext);
-		if(!(element != null && element.getUse() != "FUNC")) {
+		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
@@ -1055,7 +1085,7 @@ case 70:
 		}
 	}
 break;
-//#line 982 "Parser.java"
+//#line 1012 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
