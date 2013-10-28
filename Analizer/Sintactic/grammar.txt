@@ -163,6 +163,7 @@ functionHeader: FUNCTION ID OPENPAREN {
 		String varName = ((Token)$5.obj).getLiteralValue();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String functionName = ((Token)$2.obj).getLiteralValue();
+		ArrayList<String> currentIntCodeVector;
 		//add FUNCTION use to the function identifier
 		element = symbolTable.identify(functionName);
 		element.setUse("FUNC");
@@ -179,6 +180,12 @@ functionHeader: FUNCTION ID OPENPAREN {
 		//set PARAMETER use to each identifier in the parameters declaration
 		element.setUse("PARAM");
 		parserUtils.variableList.clear();
+		//default to 0 the return value
+		currentIntCodeVector = parserUtils.intermediateCode.get(parserUtils.context.toUpperCase());
+		currentIntCodeVector.add("rtn");
+		currentIntCodeVector.add("0");
+		currentIntCodeVector.add("=");
+
 	};
 functionDeclaration: functionHeader BEGIN varDeclarationList executionWReturnList END SEMICOLON {
 		//once the function declaration is over, set the current context as main
@@ -205,15 +212,24 @@ execution: print SEMICOLON
 	| assign SEMICOLON
 	;
 
-ret: RETURN OPENPAREN expression CLOSEPAREN SEMICOLON 
-	| RETURN expression CLOSEPAREN SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+ret: RETURN OPENPAREN {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add("rtn");
+	}expression CLOSEPAREN SEMICOLON {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add("=");
+		currentIntCodeVector.add("RET");
 	}
-	| RETURN OPENPAREN expression  SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
+	// | RETURN expression CLOSEPAREN SEMICOLON {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | RETURN OPENPAREN expression  SEMICOLON {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
 	;
 print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN
 	| PRINT CHARCHAIN CLOSEPAREN  {
@@ -394,13 +410,24 @@ assign: ID ASSIGN {
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String assignSymbol = ((Token)$2.obj).getLiteralValue();
 		String context = parserUtils.context;
-		String parameterNameWContext = context+"_"+varName;
+		String parameterNameWContext;
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		HashSet<String> contextList = new HashSet<String>();
+		boolean found = false;
+		contextList.add(context);
+		contextList.add("MAIN");
 		//check if identifier is declared 
-		element = symbolTable.identify(parameterNameWContext);
-		if(!(element != null && element.getUse() != "FUNC")) {
+		for(String cont: contextList) {
+			parameterNameWContext= cont+"_"+varName;
+			element = symbolTable.identify(parameterNameWContext);
+			if(element != null && element.getUse() != "FUNC") {
+				found = true;
+				break;
+			}
+		}
+		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
