@@ -12,23 +12,7 @@ import Lexical.SymbolElement;
 import java.util.HashMap;
 import java.util.HashSet;
 
-class parserUtils {
-	static ArrayList<String> variableList = new ArrayList<String>();
-	//there will be one reverse polish vector for each function, and one for the main. Each vector
-	//will be able to be accessed by the context name 
-	static HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
-	static ErrorHandler errorHandler = ErrorHandler.getInstance();
-	static LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
-	static String context = "main";	
-	//holds the value of the last function return
-	static long functionReturn;
-	//true if the function has returned explicitly
-	static boolean functionHasReturned;
-	//variable to handle the intermediate code generation of the FOR loop
-	static String forConditionVar;
-	//a stack to handle index handling in IF and FOR statements
-	static ArrayList<Integer> indexStack = new ArrayList<Integer>();
-}
+
 %}
 
 /* YACC Declarations */
@@ -468,6 +452,12 @@ factor: CTE {
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		SymbolElement element = new SymbolElement();
+
+		element = symbolTable.identify(varName);
+		//The only allowed type for constants is ULONG
+		element.setVarType("ULONG");
 		currentIntCodeVector.add(varName);
 	}
 	| ID {
@@ -511,6 +501,22 @@ void yyerror(String s) {
 }
 
 boolean newline;
+
+class ParserUtils {
+	ArrayList<String> variableList = new ArrayList<String>();
+	//there will be one reverse polish vector for each function, and one for the main. Each vector
+	//will be able to be accessed by the context name 
+	HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
+	ErrorHandler errorHandler = ErrorHandler.getInstance();
+	LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
+	String context = "main";	
+	//variable to handle the intermediate code generation of the FOR loop
+	String forConditionVar;
+	//a stack to handle index handling in IF and FOR statements
+	ArrayList<Integer> indexStack = new ArrayList<Integer>();
+}
+
+private ParserUtils parserUtils = new ParserUtils();
 
 int yylex() {
 	Token token = parserUtils.lexical.getToken();
