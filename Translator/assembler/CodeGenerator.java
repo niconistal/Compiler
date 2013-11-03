@@ -24,7 +24,7 @@ public class CodeGenerator {
 	 */
 	public void generate(HashMap<String,ArrayList<String>> rpn) {
 		this.addDeclarations();
-		
+		this.parseIntCode(rpn, "MAIN");
 		System.out.println(rpn);
 	}
 	/**
@@ -32,7 +32,7 @@ public class CodeGenerator {
 	 * defined in it.
 	 */
 	private void addDeclarations() {
-		
+		//TODO implement this
 	}
 	/**
 	 * Parses the intermediate code, stacking the operands, and executing the operators
