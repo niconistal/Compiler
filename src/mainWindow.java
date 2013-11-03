@@ -20,6 +20,7 @@ import java.io.File;
 
 import javax.swing.JScrollBar;
 
+import assembler.CodeGenerator;
 import utils.PathContainer;
 
 
@@ -144,7 +145,8 @@ public class mainWindow {
 			PathContainer.setPath(lblNotSelected.getText());
 			Parser parser = new Parser();
 			parser.run();
-			
+			CodeGenerator generator = new CodeGenerator();
+			generator.generate(parser.parserUtils.intermediateCode);
 			textArea.setText(ErrorHandler.getInstance().toString());
 			textArea_1.setText(SymbolTable.getInstance().toString());
 			

@@ -41,13 +41,11 @@ public class SymbolTable {
 	 */
 	
 	protected HashMap<String,SymbolElement> symbolTable;
-	
 	protected static SymbolTable instance;
 	public static final String RESERVED_WORD = "RESERVED";
 	
 	protected SymbolTable(){
 		symbolTable = new HashMap<String,SymbolElement>();
-		
 		BufferedReader br = null;
 		String reservedWordsFile = "reserved_words.txt";
 		
@@ -75,10 +73,6 @@ public class SymbolTable {
 		
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public static SymbolTable getInstance(){
 		if (instance == null){
 			instance = new SymbolTable();
@@ -103,9 +97,13 @@ public class SymbolTable {
 		return symbolTable.get(idName.toUpperCase());
 	}
 	
+	/**
+	 * Checks for the presence of an id in the table
+	 * @param idName
+	 * @return boolean true if the table contains the id
+	 */
 	public boolean contains(String idName){
-		
-		return symbolTable.containsKey(idName.toUpperCase());
+		return (symbolTable.containsKey(idName.toUpperCase()));
 	}
 	
 	public String toString(){

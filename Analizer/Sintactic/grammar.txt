@@ -64,8 +64,8 @@ declarationList: declarationList declaration
 	| declaration
 	;
 
-declaration: varDeclaration 
-	| functionDeclaration 
+declaration: varDeclaration
+	| functionDeclaration
 	;
 varDeclarationList: varDeclarationList varDeclaration
 	| varDeclaration
@@ -92,7 +92,7 @@ singleVarDeclaration: VARTYPE ID SEMICOLON {
 
 		element.setVarType(literalTypeValue);
 		element.setUse("VAR");
-		//return variable name 
+		//return variable name
 		$$=$2;
 	};
 
@@ -160,7 +160,7 @@ functionHeader: FUNCTION ID OPENPAREN {
 		parserUtils.intermediateCode.put(parserUtils.context.toUpperCase(), new ArrayList<String>());
 		varNameWithContext = parserUtils.context+"_"+varName;
 		element = symbolTable.identify(varNameWithContext);
-		
+
 		//set PARAMETER use to each identifier in the parameters declaration
 		element.setUse("PARAM");
 		parserUtils.variableList.clear();
@@ -189,7 +189,7 @@ executionWReturnList: executionWReturnList executionWReturn
 executionWReturn: execution
 	| ret
 
-execution: print SEMICOLON  
+execution: print SEMICOLON
 	| functionExecution SEMICOLON
 	| iteration SEMICOLON
 	| selection SEMICOLON
@@ -235,7 +235,7 @@ functionExecution: ID OPENPAREN ID CLOSEPAREN  {
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		//check if parameter is declared 
+		//check if parameter is declared
 		element = symbolTable.identify(parameterNameWContext);
 		if(!(element != null && element.getUse() != "FUNC")) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+parameterName+" not found.", parserUtils.lexical.getLine());
@@ -305,7 +305,7 @@ selection: IF  OPENPAREN condition CLOSEPAREN THEN {
 		//save the index where the false bifurcation will be stored
 		currentIntCodeVector.add("PLACEHOLDER");
 		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
-		currentIntCodeVector.add("[BF]");		
+		currentIntCodeVector.add("[BF]");
 
 	} block {
 		String context = parserUtils.context;
@@ -340,7 +340,7 @@ selection: IF  OPENPAREN condition CLOSEPAREN THEN {
 	// 	Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
 	// 	parserUtils.errorHandler.addError(error);
 	// }
-	// | IF OPENPAREN condition CLOSEPAREN THEN block %prec IT 
+	// | IF OPENPAREN condition CLOSEPAREN THEN block %prec IT
 	// | IF  condition CLOSEPAREN THEN block %prec IT  {
 	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
 	// 	parserUtils.errorHandler.addError(error);
@@ -361,7 +361,7 @@ condition: expression COMPARATOR expression {
 		currentIntCodeVector.add(comparatorSymbol);
 	};
 
-block: BEGIN declarationList executions END 
+block: BEGIN declarationList executions END
 	| BEGIN declarationList declaration END
 	| declarationList declaration END {
 		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
@@ -402,7 +402,7 @@ assign: ID ASSIGN {
 		boolean found = false;
 		contextList.add(context);
 		contextList.add("MAIN");
-		//check if identifier is declared 
+		//check if identifier is declared
 		for(String cont: contextList) {
 			parameterNameWContext= cont+"_"+varName;
 			element = symbolTable.identify(parameterNameWContext);
@@ -480,7 +480,7 @@ factor: CTE {
 				break;
 			}
 		}
-		//check if parameter is declared 
+		//check if parameter is declared
 		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
@@ -505,11 +505,11 @@ boolean newline;
 class ParserUtils {
 	ArrayList<String> variableList = new ArrayList<String>();
 	//there will be one reverse polish vector for each function, and one for the main. Each vector
-	//will be able to be accessed by the context name 
+	//will be able to be accessed by the context name
 	HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
 	ErrorHandler errorHandler = ErrorHandler.getInstance();
 	LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
-	String context = "main";	
+	String context = "main";
 	//variable to handle the intermediate code generation of the FOR loop
 	String forConditionVar;
 	//a stack to handle index handling in IF and FOR statements
@@ -521,7 +521,7 @@ private ParserUtils parserUtils = new ParserUtils();
 int yylex() {
 	Token token = parserUtils.lexical.getToken();
 	yylval = new ParserVal(token);
-	
+
 	switch(token.getTokenValue()) {
 		case "ID":
 			return Parser.ID;

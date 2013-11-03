@@ -10,24 +10,9 @@ import java.util.ArrayList;
 import utils.PathContainer;
 import Lexical.SymbolElement;
 import java.util.HashMap;
+import java.util.HashSet;
 
-class parserUtils {
-	static ArrayList<String> variableList = new ArrayList<String>();
-	//there will be one reverse polish vector for each function, and one for the main. Each vector
-	//will be able to be accessed by the context name 
-	static HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
-	static ErrorHandler errorHandler = ErrorHandler.getInstance();
-	static LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
-	static String context = "main";	
-	//holds the value of the last function return
-	static long functionReturn;
-	//true if the function has returned explicitly
-	static boolean functionHasReturned;
-	//variable to handle the intermediate code generation of the FOR loop
-	static String forConditionVar;
-	//a stack to handle index handling in IF and FOR statements
-	static ArrayList<Integer> indexStack = new ArrayList<Integer>();
-}
+
 %}
 
 /* YACC Declarations */
@@ -162,6 +147,7 @@ functionHeader: FUNCTION ID OPENPAREN {
 		String varName = ((Token)$5.obj).getLiteralValue();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String functionName = ((Token)$2.obj).getLiteralValue();
+		ArrayList<String> currentIntCodeVector;
 		//add FUNCTION use to the function identifier
 		element = symbolTable.identify(functionName);
 		element.setUse("FUNC");
@@ -178,6 +164,12 @@ functionHeader: FUNCTION ID OPENPAREN {
 		//set PARAMETER use to each identifier in the parameters declaration
 		element.setUse("PARAM");
 		parserUtils.variableList.clear();
+		//default to 0 the return value
+		currentIntCodeVector = parserUtils.intermediateCode.get(parserUtils.context.toUpperCase());
+		currentIntCodeVector.add("rtn");
+		currentIntCodeVector.add("0");
+		currentIntCodeVector.add("=");
+
 	};
 functionDeclaration: functionHeader BEGIN varDeclarationList executionWReturnList END SEMICOLON {
 		//once the function declaration is over, set the current context as main
@@ -204,15 +196,24 @@ execution: print SEMICOLON
 	| assign SEMICOLON
 	;
 
-ret: RETURN OPENPAREN expression CLOSEPAREN SEMICOLON 
-	| RETURN expression CLOSEPAREN SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
+ret: RETURN OPENPAREN {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add("rtn");
+	}expression CLOSEPAREN SEMICOLON {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		currentIntCodeVector.add("=");
+		currentIntCodeVector.add("RET");
 	}
-	| RETURN OPENPAREN expression  SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
-		parserUtils.errorHandler.addError(error);
-	}
+	// | RETURN expression CLOSEPAREN SEMICOLON {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
+	// | RETURN OPENPAREN expression  SEMICOLON {
+	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
+	// 	parserUtils.errorHandler.addError(error);
+	// }
 	;
 print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN
 	| PRINT CHARCHAIN CLOSEPAREN  {
@@ -244,8 +245,6 @@ functionExecution: ID OPENPAREN ID CLOSEPAREN  {
 		currentIntCodeVector.add(functionName);
 		currentIntCodeVector.add("[CALL]");
 		currentIntCodeVector.add("rtn");
-
-
 	}
 	| ID ID CLOSEPAREN SEMICOLON {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
@@ -395,13 +394,24 @@ assign: ID ASSIGN {
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String assignSymbol = ((Token)$2.obj).getLiteralValue();
 		String context = parserUtils.context;
-		String parameterNameWContext = context+"_"+varName;
+		String parameterNameWContext;
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		//check if parameter is declared 
-		element = symbolTable.identify(parameterNameWContext);
-		if(!(element != null && element.getUse() != "FUNC")) {
+		HashSet<String> contextList = new HashSet<String>();
+		boolean found = false;
+		contextList.add(context);
+		contextList.add("MAIN");
+		//check if identifier is declared 
+		for(String cont: contextList) {
+			parameterNameWContext= cont+"_"+varName;
+			element = symbolTable.identify(parameterNameWContext);
+			if(element != null && element.getUse() != "FUNC") {
+				found = true;
+				break;
+			}
+		}
+		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
@@ -442,19 +452,36 @@ factor: CTE {
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		SymbolTable symbolTable = SymbolTable.getInstance();
+		SymbolElement element = new SymbolElement();
+
+		element = symbolTable.identify(varName);
+		//The only allowed type for constants is ULONG
+		element.setVarType("ULONG");
 		currentIntCodeVector.add(varName);
 	}
 	| ID {
 		Error error;
 		String varName = ((Token)$1.obj).getLiteralValue();
 		String context = parserUtils.context;
-		String parameterNameWContext = context+"_"+varName;
+		HashSet<String> contextList = new HashSet<String>();
 		SymbolElement element = new SymbolElement();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String parameterNameWContext;
+		boolean found = false;
+		contextList.add(context);
+		contextList.add("MAIN");
+		for(String cont: contextList) {
+			parameterNameWContext= cont+"_"+varName;
+			element = symbolTable.identify(parameterNameWContext);
+			if(element != null && element.getUse() != "FUNC") {
+				found = true;
+				break;
+			}
+		}
 		//check if parameter is declared 
-		element = symbolTable.identify(parameterNameWContext);
-		if(!(element != null && element.getUse() != "FUNC")) {
+		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
@@ -474,6 +501,22 @@ void yyerror(String s) {
 }
 
 boolean newline;
+
+class ParserUtils {
+	ArrayList<String> variableList = new ArrayList<String>();
+	//there will be one reverse polish vector for each function, and one for the main. Each vector
+	//will be able to be accessed by the context name 
+	HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
+	ErrorHandler errorHandler = ErrorHandler.getInstance();
+	LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
+	String context = "main";	
+	//variable to handle the intermediate code generation of the FOR loop
+	String forConditionVar;
+	//a stack to handle index handling in IF and FOR statements
+	ArrayList<Integer> indexStack = new ArrayList<Integer>();
+}
+
+private ParserUtils parserUtils = new ParserUtils();
 
 int yylex() {
 	Token token = parserUtils.lexical.getToken();

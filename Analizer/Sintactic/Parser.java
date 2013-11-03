@@ -432,26 +432,26 @@ void yyerror(String s) {
 
 boolean newline;
 
-class ParserUtils {
+public class ParserUtils {
 	ArrayList<String> variableList = new ArrayList<String>();
 	//there will be one reverse polish vector for each function, and one for the main. Each vector
-	//will be able to be accessed by the context name 
-	HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
+	//will be able to be accessed by the context name
+	public HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
 	ErrorHandler errorHandler = ErrorHandler.getInstance();
 	LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
-	String context = "main";	
+	String context = "main";
 	//variable to handle the intermediate code generation of the FOR loop
 	String forConditionVar;
 	//a stack to handle index handling in IF and FOR statements
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
 }
 
-private ParserUtils parserUtils = new ParserUtils();
+public ParserUtils parserUtils = new ParserUtils();
 
 int yylex() {
 	Token token = parserUtils.lexical.getToken();
 	yylval = new ParserVal(token);
-	
+
 	switch(token.getTokenValue()) {
 		case "ID":
 			return Parser.ID;
@@ -699,7 +699,7 @@ case 12:
 
 		element.setVarType(literalTypeValue);
 		element.setUse("VAR");
-		/*return variable name */
+		/*return variable name*/
 		yyval=val_peek(1);
 	}
 break;
@@ -779,7 +779,7 @@ case 18:
 		parserUtils.intermediateCode.put(parserUtils.context.toUpperCase(), new ArrayList<String>());
 		varNameWithContext = parserUtils.context+"_"+varName;
 		element = symbolTable.identify(varNameWithContext);
-		
+
 		/*set PARAMETER use to each identifier in the parameters declaration*/
 		element.setUse("PARAM");
 		parserUtils.variableList.clear();
@@ -840,7 +840,7 @@ case 36:
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
-		/*check if parameter is declared */
+		/*check if parameter is declared*/
 		element = symbolTable.identify(parameterNameWContext);
 		if(!(element != null && element.getUse() != "FUNC")) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+parameterName+" not found.", parserUtils.lexical.getLine());
@@ -918,7 +918,7 @@ case 42:
 		/*save the index where the false bifurcation will be stored*/
 		currentIntCodeVector.add("PLACEHOLDER");
 		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
-		currentIntCodeVector.add("[BF]");		
+		currentIntCodeVector.add("[BF]");
 
 	}
 break;
@@ -1007,7 +1007,7 @@ case 57:
 		boolean found = false;
 		contextList.add(context);
 		contextList.add("MAIN");
-		/*check if identifier is declared */
+		/*check if identifier is declared*/
 		for(String cont: contextList) {
 			parameterNameWContext= cont+"_"+varName;
 			element = symbolTable.identify(parameterNameWContext);
@@ -1097,7 +1097,7 @@ case 65:
 				break;
 			}
 		}
-		/*check if parameter is declared */
+		/*check if parameter is declared*/
 		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
