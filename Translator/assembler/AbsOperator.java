@@ -1,5 +1,7 @@
 package assembler;
 
+import java.util.Stack;
+
 /**
  * AbsOperator will represent the family of the operator classes
  * @author Inti
@@ -7,6 +9,6 @@ package assembler;
  */
 public abstract class AbsOperator {
 	
-	public abstract void operate();
+	public abstract void operate(Stack<String> operandStack);
 
 }
