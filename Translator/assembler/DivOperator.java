@@ -1,11 +1,11 @@
 package assembler;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
-public class DivOperator extends AbsOperator {
+public class DivOperator extends NonConmutativeOperator {
 
 	@Override
-	public void operate(Stack<String> operandStack) {
+	public void generate(ArrayList<String> operands) {
 		// TODO Auto-generated method stub
 
 	}

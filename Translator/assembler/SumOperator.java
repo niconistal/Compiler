@@ -1,11 +1,12 @@
 package assembler;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
-public class SumOperator extends AbsOperator{
+public class SumOperator extends ConmutativeOperator{
 
 	@Override
-	public void operate(Stack<String> operandStack) {
+	public void generate(ArrayList<String> operands) {
 		// TODO Auto-generated method stub
 		
 	}
