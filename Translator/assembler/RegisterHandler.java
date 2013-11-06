@@ -14,6 +14,10 @@ public class RegisterHandler {
 	
 	//a false value in the ith field will indicate that the i register is
 	// AVAILABLE
+	public static int REG_A = 3;
+	public static int REG_B = 2;
+	public static int REG_C = 1;
+	public static int REG_D = 0;
 	private String[] regs = {"B","C","D","A"};
 	private boolean registers[];
 	private static final int REG_AMOUNT = 4;
