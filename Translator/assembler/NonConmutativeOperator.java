@@ -19,7 +19,16 @@ public class NonConmutativeOperator extends AbsOperator {
 	@Override
 	public ArrayList<String> resolveMemory(Variable m1, Register r2) {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<String> result = new ArrayList<String>();
+		RegisterHandler regi = RegisterHandler.getInstance();
+		String rega = regi.getRegister();
+		//Llamar a la clase de augusto MOV RA, M1
+		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName(),-1);
+		result.add(rega);
+		result.add(r2.getName());
+		//El regi se va =(
+		regi.freeRegister(r2.getName());
+		return result;
 	}
 
 	@Override
