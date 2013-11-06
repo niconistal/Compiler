@@ -1,6 +1,6 @@
 package assembler;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 /**
  * AbsOperator will represent the family of the operator classes
@@ -9,6 +9,6 @@ import java.util.Stack;
  */
 public abstract class AbsOperator {
 	
-	public abstract void operate(Stack<String> operandStack);
+	public abstract void generate(ArrayList<String> operands);
 
 }
