@@ -34,18 +34,31 @@ public abstract class AbsOperator {
 		}
 		this.generate(resolvedOperands);
 	}
-	public abstract ArrayList<String> resolveMemory(Register r1, Register r2);
-	public abstract ArrayList<String> resolveMemory(Register r1, Variable m2);
+	public  ArrayList<String> resolveMemory(Register r1, Register r2) {
+		ArrayList<String> result = new ArrayList<String>();
+		result.add(r1.getName());
+		result.add(r2.getName());
+		RegisterHandler.getInstance().freeRegister(r2.getName());
+		
+		return result;
+	}
+	public ArrayList<String> resolveMemory(Register r1, Variable m2) {
+		ArrayList<String> result = new ArrayList<String>();
+		result.add(r1.getName());
+		result.add(m2.getName());
+		
+		return result;
+	}
 	public abstract ArrayList<String> resolveMemory(Variable m1, Register r2);
-	/**
-	 * This method of memory resolution will be the same for all binary operators
-	 * @param m1 a variable
-	 * @param m2 a variable
-	 * @return the resolved variables
-	 */
+	
 	public  ArrayList<String> resolveMemory(Variable m1, Variable m2) {
 		RegisterHandler registerHanlder = RegisterHandler.getInstance();
-		registerHanlder.getRegister();
+		ArrayList<String> result = new ArrayList<String>();
+		String reg1 = registerHanlder.getRegister();
+		//ADD TO FinalCodeContainer MOV reg1 m2.getName()
+		result.add(m1.getName());
+		result.add(reg1);
+		return result;
 	}
 	
 	public abstract void generate(ArrayList<String> operands);

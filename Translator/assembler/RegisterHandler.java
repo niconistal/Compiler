@@ -46,6 +46,7 @@ public class RegisterHandler {
 	public String getRegister() {
 		for(int i = 0; i < REG_AMOUNT; i++) {
 			if(!this.registers[i]) {
+				this.registers[i] = true;
 				return regs[i];
 			}
 		}
@@ -58,6 +59,7 @@ public class RegisterHandler {
 	 */
 	public String getRegister(int r) {
 		if(!this.registers[r]) {
+			this.registers[r] = true;
 			return this.regs[r];
 		}
 		return null;
