@@ -15,7 +15,7 @@ public class DivOperator extends NonConmutativeOperator {
 		RegisterHandler regi = RegisterHandler.getInstance();
 		String rega = regi.getRegister(RegisterHandler.REG_A);
 		//Llamar a la case de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName(),-1);
+		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
 		result.add(rega);
 		result.add(m2.getName());
 		return result;
@@ -28,7 +28,7 @@ public class DivOperator extends NonConmutativeOperator {
 		RegisterHandler regi = RegisterHandler.getInstance();
 		String rega = regi.getRegister(RegisterHandler.REG_A);
 		//Llamar a la clase de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName(),-1);
+		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
 		result.add(rega);
 		result.add(r2.getName());
 		//El regi se va =(
@@ -44,7 +44,7 @@ public class DivOperator extends NonConmutativeOperator {
 			String rega = regi.getRegister(RegisterHandler.REG_A);
 			regi.freeRegister(r1.getName());
 			//Aca llamo a la clase de augusto MOV RA, R1
-			//FinalCodeContainer.add("MOV "+rega", "+r1.getName(),-1);
+			//FinalCodeContainer.add("MOV "+rega", "+r1.getName());
 			result.add(rega);
 			result.add(m2.getName());
 		}else{
@@ -64,7 +64,7 @@ public class DivOperator extends NonConmutativeOperator {
 			String rega = regi.getRegister(RegisterHandler.REG_A);
 			regi.freeRegister(r1.getName());
 			//Aca llamo a la clase de augusto MOV RA, R1
-			//FinalCodeContainer.add("MOV "+rega", "+r1.getName(),-1);
+			//FinalCodeContainer.add("MOV "+rega", "+r1.getName());
 			result.add(rega);
 			result.add(r2.getName());
 		}else{

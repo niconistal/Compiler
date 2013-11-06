@@ -23,7 +23,7 @@ public class NonConmutativeOperator extends AbsOperator {
 		RegisterHandler regi = RegisterHandler.getInstance();
 		String rega = regi.getRegister();
 		//Llamar a la clase de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName(),-1);
+		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
 		result.add(rega);
 		result.add(r2.getName());
 		//El regi se va =(
