@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 public class CodeGenerator {
 	
 	private Stack<String> operandStack;
+	private HashMap<String, String> labels;
 	
 	public CodeGenerator(){
 		this.operandStack = new Stack<String>();
@@ -35,11 +36,24 @@ public class CodeGenerator {
 		//TODO implement this
 	}
 	/**
+	 * Generates and stores the labels for each jump
+	 * @param rpn The main RPN intermediate code
+	 */
+	private void generateLabels(ArrayList<String> rpn) {
+		for(int i = 0; i< rpn.size();i++){
+			//If it's a jump instruction
+			if(Pattern.matches("\\[BF\\]|\\[JMP\\]",rpn.get(i))) {
+				this.labels.put(rpn.get(i-1), "label_"+rpn.get(i-1));
+			}
+		}
+	}
+	/**
 	 * Parses the intermediate code, stacking the operands, and executing the operators
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 */
 	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) {
 		ArrayList<String> intermediateCode = rpn.get(context);
+		this.generateLabels(intermediateCode);
 		OperatorFactory factory = new OperatorFactory();
 		for(String codeItem : intermediateCode) {
 			//if it's not an operator
