@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+
 /**
  * CodeGenerator will iterate through the rpn translating the intermediate code
  * to the actual assembler code
@@ -54,17 +55,19 @@ public class CodeGenerator {
 	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) {
 		ArrayList<String> intermediateCode = rpn.get(context);
 		OperatorFactory factory = new OperatorFactory();
-		int count = 0;
+		int count = 0;//necesito pasar un contador; sino hacer el for (int i ...)
 		
 		for(String codeItem : intermediateCode) {
 			System.out.println(codeItem.toString());
 			//if it's not an operator
-			if(Pattern.matches("\\w+",codeItem)) {
-				this.operands.add(codeItem);
-			} else {
-				factory.create(codeItem).generate(this.operands);
-			count++;
-		} 
+//			if(Pattern.matches("\\w+",codeItem)) {
+//				this.operands.add(codeItem);
+//			} else {
+//				factory.create(codeItem).generate(this.operands);
+//			count++;
+//		} 
+			
+
 	
 	}
 	}

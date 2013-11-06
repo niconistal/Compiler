@@ -3,7 +3,7 @@ package assembler;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public abstract class MultOperator extends AbsOperator {
+public class MultOperator extends ConmutativeOperator {
 
 	public void generate(ArrayList<String> operands) { 
 		String second = operands.get(1);

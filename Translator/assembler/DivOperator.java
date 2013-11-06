@@ -3,7 +3,7 @@ package assembler;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public abstract class DivOperator extends AbsOperator {
+public class DivOperator extends NonConmutativeOperator {
 
 	public void generate(ArrayList<String> operands) { 
 		//EDX:EAX / REGoMem = EAX

@@ -3,7 +3,7 @@ package assembler;
 import java.util.ArrayList;
 import java.util.Stack;
 
-public class  SumOperator extends AbsOperator{
+public class SumOperator extends ConmutativeOperator{
 
 	public void generate(ArrayList<String> operands) { 
 		String second = operands.get(1);
