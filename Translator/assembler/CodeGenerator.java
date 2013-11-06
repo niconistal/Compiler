@@ -55,7 +55,8 @@ public class CodeGenerator {
 	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) {
 		ArrayList<String> intermediateCode = rpn.get(context);
 		OperatorFactory factory = new OperatorFactory();
-		int count = 0;//necesito pasar un contador; sino hacer el for (int i ...)
+
+		//labels
 		
 		for(String codeItem : intermediateCode) {
 			System.out.println(codeItem.toString());
