@@ -6,8 +6,10 @@ public abstract class ConmutativeOperator extends AbsOperator {
 
 	@Override
 	public ArrayList<String> resolveMemory(Register r1, Register r2) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<String> result = new ArrayList<String>();
+		result.add(r1.getName());
+		result.add(r2.getName());
+		return result;
 	}
 
 	@Override

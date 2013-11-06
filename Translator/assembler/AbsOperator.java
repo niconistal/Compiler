@@ -37,7 +37,16 @@ public abstract class AbsOperator {
 	public abstract ArrayList<String> resolveMemory(Register r1, Register r2);
 	public abstract ArrayList<String> resolveMemory(Register r1, Variable m2);
 	public abstract ArrayList<String> resolveMemory(Variable m1, Register r2);
-	public abstract ArrayList<String> resolveMemory(Variable m1, Variable m2);
+	/**
+	 * This method of memory resolution will be the same for all binary operators
+	 * @param m1 a variable
+	 * @param m2 a variable
+	 * @return the resolved variables
+	 */
+	public  ArrayList<String> resolveMemory(Variable m1, Variable m2) {
+		RegisterHandler registerHanlder = RegisterHandler.getInstance();
+		registerHanlder.getRegister();
+	}
 	
 	public abstract void generate(ArrayList<String> operands);
 	

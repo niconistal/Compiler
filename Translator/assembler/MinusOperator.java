@@ -1,7 +1,6 @@
 package assembler;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class MinusOperator extends NonConmutativeOperator{
 
