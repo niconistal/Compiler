@@ -1,16 +1,19 @@
 package assembler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class MultOperator extends ConmutativeOperator {
 
-	public void generate(ArrayList<String> operands) { 
+	public void generate(ArrayList<String> operands){ 
 		String second = operands.get(1);
 		String first = operands.get(0); 
 		//first must be EAX
-		System.out.println("imul "+first+" , "+second+System.lineSeparator());
-		System.out.println("JO _overflowed"); //TODO add _overflowed: sentence, invoke message,
+		CodeGenerator.assembler.add("imul "+first+" , "+second);
+		CodeGenerator.assembler.add("JO _overflowed");
+		//System.out.println("imul "+first+" , "+second+System.lineSeparator());
+		//System.out.println("JO _overflowed"); //TODO add _overflowed: sentence, invoke message,
 												//invoke exit process
 
 	}

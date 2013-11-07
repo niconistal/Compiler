@@ -114,4 +114,12 @@ public class SymbolTable {
 		}
 		return keys;
 	}
+
+	public Set<String> keySet() {
+		return symbolTable.keySet();
+	}
+
+	public SymbolElement get(String s) {
+		return symbolTable.get(s);
+	}
 }

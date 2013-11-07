@@ -1,5 +1,6 @@
 package assembler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.regex.Pattern;
