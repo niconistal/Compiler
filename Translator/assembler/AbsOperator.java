@@ -59,6 +59,7 @@ public abstract class AbsOperator {
 		result.add(m1.getName());
 		result.add(reg1);
 		return result;
+
 	}
 	
 	public abstract void generate(ArrayList<String> operands);
@@ -66,5 +67,6 @@ public abstract class AbsOperator {
 	public boolean isRegister(String m){
 		return !Pattern.matches("^_",m);
 	}
+
 
 }

@@ -1,13 +1,17 @@
 package assembler;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class DivOperator extends NonConmutativeOperator {
 
-	@Override
-	public void generate(ArrayList<String> operands) {
-		// TODO Auto-generated method stub
-
+	public void generate(ArrayList<String> operands) { 
+		//EDX:EAX / REGoMem = EAX
+		//viene [REG1,REG2 (ok), REG1,var(ok) con REG1 en EAX ]
+		//viene [REG1,cte REG1 en eax y cte almacenada en variable]
+		// regs[B,C,D,A] que el A se ocupe ultimo
+		String first = operands.get(0);
+		System.out.println("idiv "+first+System.lineSeparator());
 	}
 	@Override
 	public ArrayList<String> resolveMemory (Variable m1, Variable m2){
