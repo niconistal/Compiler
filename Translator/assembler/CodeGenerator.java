@@ -59,8 +59,6 @@ public class CodeGenerator {
 		ArrayList<String> intermediateCode = rpn.get(context);
 		this.generateLabels(intermediateCode);
 		OperatorFactory factory = new OperatorFactory();
-
-		//labels
 		
 		for(String codeItem : intermediateCode) {
 			System.out.println(codeItem.toString());
@@ -68,7 +66,7 @@ public class CodeGenerator {
 //			if(Pattern.matches("\\w+",codeItem)) {
 //				this.operands.add(codeItem);
 //			} else {
-//				factory.create(codeItem).generate(this.operands);
+//				factory.create(codeItem).operate(this.operandStack);
 //			count++;
 //		} 
 			

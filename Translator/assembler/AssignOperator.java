@@ -13,21 +13,12 @@ public class AssignOperator extends AbsOperator {
 	}
 
 	@Override
-	public ArrayList<String> resolveMemory(Register r1, Register r2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<String> resolveMemory(Register r1, Variable m2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ArrayList<String> resolveMemory(Variable m1, Register r2) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<String> result = new ArrayList<String>();
+		result.add(m1.getName());
+		result.add(r2.getName());
+		RegisterHandler.getInstance().freeRegister(r2.getName());
+		return result;
 	}
 
 }

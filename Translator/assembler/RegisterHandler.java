@@ -18,7 +18,7 @@ public class RegisterHandler {
 	public static int REG_B = 2;
 	public static int REG_C = 1;
 	public static int REG_D = 0;
-	private String[] regs = {"B","C","D","A"};
+	private String[] regs = {"EBX","ECX","EDX","EAX"};
 	private boolean registers[];
 	private static final int REG_AMOUNT = 4;
 	private static RegisterHandler instance;
