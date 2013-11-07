@@ -1,5 +1,6 @@
 package assembler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -11,7 +12,8 @@ public class DivOperator extends NonConmutativeOperator {
 		//viene [REG1,cte REG1 en eax y cte almacenada en variable]
 		// regs[B,C,D,A] que el A se ocupe ultimo
 		String first = operands.get(0);
-		System.out.println("idiv "+first+System.lineSeparator());
+		CodeGenerator.assembler.add("idiv "+first);
+		//System.out.println("idiv "+first+System.lineSeparator());
 	}
 	@Override
 	public ArrayList<String> resolveMemory (Variable m1, Variable m2){
@@ -19,7 +21,7 @@ public class DivOperator extends NonConmutativeOperator {
 		RegisterHandler regi = RegisterHandler.getInstance();
 		String rega = regi.getRegister(RegisterHandler.REG_A);
 		//Llamar a la case de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName(),-1);
+		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
 		result.add(rega);
 		result.add(m2.getName());
 		return result;
@@ -32,7 +34,7 @@ public class DivOperator extends NonConmutativeOperator {
 		RegisterHandler regi = RegisterHandler.getInstance();
 		String rega = regi.getRegister(RegisterHandler.REG_A);
 		//Llamar a la clase de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName(),-1);
+		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
 		result.add(rega);
 		result.add(r2.getName());
 		//El regi se va =(
@@ -48,7 +50,7 @@ public class DivOperator extends NonConmutativeOperator {
 			String rega = regi.getRegister(RegisterHandler.REG_A);
 			regi.freeRegister(r1.getName());
 			//Aca llamo a la clase de augusto MOV RA, R1
-			//FinalCodeContainer.add("MOV "+rega", "+r1.getName(),-1);
+			//FinalCodeContainer.add("MOV "+rega", "+r1.getName());
 			result.add(rega);
 			result.add(m2.getName());
 		}else{
@@ -68,7 +70,7 @@ public class DivOperator extends NonConmutativeOperator {
 			String rega = regi.getRegister(RegisterHandler.REG_A);
 			regi.freeRegister(r1.getName());
 			//Aca llamo a la clase de augusto MOV RA, R1
-			//FinalCodeContainer.add("MOV "+rega", "+r1.getName(),-1);
+			//FinalCodeContainer.add("MOV "+rega", "+r1.getName());
 			result.add(rega);
 			result.add(r2.getName());
 		}else{

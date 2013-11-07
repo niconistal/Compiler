@@ -17,6 +17,7 @@ import Sintactic.Parser;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JScrollBar;
 
@@ -78,7 +79,12 @@ public class mainWindow {
 		btnRun.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				runCompiler();
+				try {
+					runCompiler();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		btnRun.setMnemonic('r');
@@ -137,7 +143,7 @@ public class mainWindow {
 	    }
 	}
 	
-	public void runCompiler(){
+	public void runCompiler() throws IOException{
 		if (lblNotSelected.getText().equals("Not selected")){
 			//showAlert("Please choose a file");
 			JOptionPane.showMessageDialog(null,"Please select a file first.");
