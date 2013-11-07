@@ -276,8 +276,8 @@ iteration: FOR OPENPAREN assign SEMICOLON {
 		String forReevaluationIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1).toString();
 		String falseBifurcationDirection;
 		//increment the condition variable
-		currentIntCodeVector.add(parserUtils.forConditionVar);
-		currentIntCodeVector.add(parserUtils.forConditionVar);
+		currentIntCodeVector.add(context+"_"+parserUtils.forConditionVar);
+		currentIntCodeVector.add(context+"_"+parserUtils.forConditionVar);
 		currentIntCodeVector.add("1");
 		currentIntCodeVector.add("+");
 		currentIntCodeVector.add("=");
@@ -388,7 +388,7 @@ assign: ID ASSIGN {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		String varName = ((Token)$1.obj).getLiteralValue();
-		currentIntCodeVector.add(varName);
+		currentIntCodeVector.add(context+"_"+varName);
 	}expression  {
 		Error error;
 		String varName = ((Token)$1.obj).getLiteralValue();
@@ -485,7 +485,7 @@ factor: CTE {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		} else {
-			currentIntCodeVector.add(varName);
+			currentIntCodeVector.add(parserUtils.context+"_"+varName);
 		}
 	}
 	| functionExecution
@@ -502,11 +502,11 @@ void yyerror(String s) {
 
 boolean newline;
 
-class ParserUtils {
+public class ParserUtils {
 	ArrayList<String> variableList = new ArrayList<String>();
 	//there will be one reverse polish vector for each function, and one for the main. Each vector
 	//will be able to be accessed by the context name
-	HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
+	public HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
 	ErrorHandler errorHandler = ErrorHandler.getInstance();
 	LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
 	String context = "main";
@@ -516,7 +516,7 @@ class ParserUtils {
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
 }
 
-private ParserUtils parserUtils = new ParserUtils();
+public ParserUtils parserUtils = new ParserUtils();
 
 int yylex() {
 	Token token = parserUtils.lexical.getToken();
