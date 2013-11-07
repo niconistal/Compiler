@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 public class CodeGenerator {
 	
 	private ArrayList<String> operands;
-	private HashMap<String,ArrayList<String>> rpn;
 	
 	public CodeGenerator(){
 		this.operands = new ArrayList<String>();
@@ -27,8 +26,15 @@ public class CodeGenerator {
 	public void generate(HashMap<String,ArrayList<String>> rpn) {
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
-		this.rpn=rpn;
 		System.out.println(rpn);
+	}
+	
+	/**
+	 * Add to the file the necessary libraries for the MASM
+	 */
+	private void addHeader(){
+		
+		
 	}
 	/**
 	 * Takes the Symbol Table, and adds the declaration statements, given the variables
@@ -36,15 +42,6 @@ public class CodeGenerator {
 	 */
 	private void addDeclarations() {
 		//TODO implement this
-	}
-	
-	/**
-	 * return the item located in the ith position of the 
-	 * polish (context applied)
-	 */
-	protected String getPosition(int i, String context){
-		return rpn.get(context).get(i);
-		
 	}
 	
 	/**
@@ -56,10 +53,12 @@ public class CodeGenerator {
 		ArrayList<String> intermediateCode = rpn.get(context);
 		OperatorFactory factory = new OperatorFactory();
 
-		//labels
 		
-		for(String codeItem : intermediateCode) {
+		for(int i=0; i< intermediateCode.size();i++) {
+			String codeItem = intermediateCode.get(i);
 			System.out.println(codeItem.toString());
+			//if(labels.get[i]!=null)
+			// agregar_lista("label_"+i+": ");
 			//if it's not an operator
 //			if(Pattern.matches("\\w+",codeItem)) {
 //				this.operands.add(codeItem);
