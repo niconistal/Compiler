@@ -51,22 +51,31 @@ public abstract class AbsOperator {
 		return result;
 	}
 	public abstract ArrayList<String> resolveMemory(Variable m1, Register r2);
-	
+	/**
+	 * 
+	 * @param m1
+	 * @param m2
+	 * @return
+	 */
 	public  ArrayList<String> resolveMemory(Variable m1, Variable m2) {
 		RegisterHandler registerHanlder = RegisterHandler.getInstance();
 		ArrayList<String> result = new ArrayList<String>();
 		String reg1 = registerHanlder.getRegister();
-		//ADD TO FinalCodeContainer MOV reg1 m2.getName()
-		result.add(m1.getName());
+		CodeGenerator.assembler.add("MOV "+reg1+" , "+m2.getName());
 		result.add(reg1);
+		result.add(m1.getName());
 		return result;
 
 	}
 	
 	public abstract void generate(ArrayList<String> operands);
 	
-	public boolean isRegister(String m){
-		return !Pattern.matches("^_",m);
+	public boolean isRegister(String m){ //EAX EBX ECX EDX
+		return Pattern.matches("EAX|EBX|ECX|EDX",m);
+	}
+	public String getRegA() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

@@ -14,6 +14,8 @@ public class OperatorFactory {
 			return new DivOperator();
 		case "[JMP]":
 			return new JumpOperator();
+		case "=":
+			return new AssignOperator();
 		default:
 			return null;
 		}

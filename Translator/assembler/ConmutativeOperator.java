@@ -15,4 +15,9 @@ public abstract class ConmutativeOperator extends AbsOperator {
 
 	public abstract void generate(ArrayList<String> operands);
 
+	public String getRegA() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -12,16 +12,28 @@ public class DivOperator extends NonConmutativeOperator {
 		//viene [REG1,cte REG1 en eax y cte almacenada en variable]
 		// regs[B,C,D,A] que el A se ocupe ultimo
 		String first = operands.get(0);
-		CodeGenerator.assembler.add("idiv "+first);
+		String second = operands.get(1);
+		CodeGenerator.assembler.add("idiv "+second);
+		CodeGenerator.operandStack.push(first); //must be EAX
 		//System.out.println("idiv "+first+System.lineSeparator());
 	}
+	
+	
+	public String getRegA(){
+		RegisterHandler regi = RegisterHandler.getInstance();
+		if(!regi.isFree(RegisterHandler.REG_A)){
+			String newReg = regi.reallocate("EAX");
+			CodeGenerator.operandStack.set(CodeGenerator.operandStack.indexOf("EAX"), newReg);
+		}
+		return regi.getRegister(RegisterHandler.REG_A);	
+	}
+	
 	@Override
 	public ArrayList<String> resolveMemory (Variable m1, Variable m2){
 		ArrayList<String> result = new ArrayList<String>();
 		RegisterHandler regi = RegisterHandler.getInstance();
-		String rega = regi.getRegister(RegisterHandler.REG_A);
-		//Llamar a la case de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
+		String rega = getRegA();
+		CodeGenerator.assembler.add("MOV "+rega+" , "+m1.getName());// MOV RA, M1
 		result.add(rega);
 		result.add(m2.getName());
 		return result;

@@ -9,7 +9,7 @@ public class AssignOperator extends AbsOperator {
 	public void generate(ArrayList<String> operands) { 
 		String second = operands.get(1);
 		String first = operands.get(0);
-		CodeGenerator.assembler.add("mov "+first+" , ");
+		CodeGenerator.assembler.add("MOV "+first+" , "+second);
 		//System.out.println("mov "+first+" , "+second+System.lineSeparator());
 
 	}
