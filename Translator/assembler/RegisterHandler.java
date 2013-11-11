@@ -19,11 +19,12 @@ public class RegisterHandler {
 	public static int REG_C = 1;
 	public static int REG_D = 0;
 	private String[] regs = {"EBX","ECX","EDX","EAX"};
-	private boolean registers[];
+	private boolean[] registers;
 	private static final int REG_AMOUNT = 4;
 	private static RegisterHandler instance;
 	
 	public RegisterHandler() {
+		registers = new boolean[REG_AMOUNT];
 		for(int i = 0;i < REG_AMOUNT;i++) {
 			this.registers[i] = false;
 		}
@@ -74,5 +75,22 @@ public class RegisterHandler {
 				this.registers[i] = false;
 			}
 		}
+	}
+	/**
+	 * 
+	 */
+	public boolean isFree(int register){
+		return  !this.registers[register];
+	}
+	
+/**
+ * 
+ */
+	public String reallocate(String register){
+		String reg = this.getRegister();
+		this.freeRegister(register);
+		CodeGenerator.assembler.add("MOV "+reg+" , "+register);
+		return reg;
+		
 	}
 }

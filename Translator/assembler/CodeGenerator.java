@@ -23,15 +23,14 @@ import Lexical.SymbolTable;
  */
 public class CodeGenerator {
 	
-	private Stack<String> operandStack;
+	public static Stack<String> operandStack;
 	private HashMap<String, String> labels;
-	private ArrayList<String> operands;
 	public static ArrayList<String> assembler;
 	
-	public CodeGenerator() throws IOException{
-		this.operands = new ArrayList<String>();		
-		this.assembler =new ArrayList<String>();
-	}
+	public CodeGenerator() {		
+		assembler =new ArrayList<String>();
+		operandStack =new Stack<String>();
+		}
 	/**
 	 * Generates the assembler code given the rpn
 	 * @param rpn the intermediate code in Reverse Polish Notation
@@ -117,23 +116,27 @@ public class CodeGenerator {
 		ArrayList<String> intermediateCode = rpn.get(context);
 //		this.generateLabels(intermediateCode);
 		OperatorFactory factory = new OperatorFactory();
-//		for(int i=0; i< intermediateCode.size();i++) {
-//			String codeItem = intermediateCode.get(i);
-//			//System.out.println(codeItem.toString());
+		String codeItem = new String();
+		for(int i=0; i< intermediateCode.size();i++) {
+			codeItem = intermediateCode.get(i);
+			System.out.println(codeItem);
+			//System.out.println(codeItem.toString());
 //			if(labels.containsKey(Integer.toString(i)))
 //				assembler.add("label_"+i+": ");
-//				//if it's not an operator
-//			if(Pattern.matches("\\w+",codeItem)) {
-//				this.operands.add(codeItem);
-//			} else {
-//				factory.create(codeItem).operate(this.operandStack);
-//			count++;
-//		} 
+				//if it's not an operator
+			if(Pattern.matches("\\w+",codeItem)) {
+				this.operandStack.push(codeItem);
+				System.out.println(operandStack.toString());
+			} else {
+				factory.create(codeItem).operate(this.operandStack);
+				System.out.println(operandStack.toString());
+
+			} 
 			
-//			} 
-//			
-//
-//	
-//	}
+		} 
+			
+
+	
 	}
-}
+	}
+
