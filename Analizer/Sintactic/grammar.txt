@@ -215,7 +215,13 @@ ret: RETURN OPENPAREN {
 	// 	parserUtils.errorHandler.addError(error);
 	// }
 	;
-print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN
+print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN {
+		String context = parserUtils.context;
+		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
+		String message = ((Token)$3.obj).getLiteralValue();
+		currentIntCodeVector.add(message);
+		currentIntCodeVector.add("[PRINT]");
+	}
 	| PRINT CHARCHAIN CLOSEPAREN  {
 		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
