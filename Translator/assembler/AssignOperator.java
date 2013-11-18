@@ -1,10 +1,8 @@
 package assembler;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Stack;
 
-public class AssignOperator extends AbsOperator {
+public class AssignOperator extends AbsBinOperator {
 
 	public void generate(ArrayList<String> operands) { 
 		String second = operands.get(1);

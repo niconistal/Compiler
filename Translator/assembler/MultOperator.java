@@ -1,8 +1,6 @@
 package assembler;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class MultOperator extends ConmutativeOperator {
 

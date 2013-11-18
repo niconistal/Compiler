@@ -1,17 +1,12 @@
 package assembler;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import Lexical.SymbolElement;
 import Lexical.SymbolTable;
 
 
@@ -24,13 +19,16 @@ import Lexical.SymbolTable;
 public class CodeGenerator {
 	
 	public static Stack<String> operandStack;
+	public static String check; 
 	private HashMap<String, String> labels;
 	public static ArrayList<String> assembler;
 	
 	public CodeGenerator() {		
-		assembler =new ArrayList<String>();
-		operandStack =new Stack<String>();
-		}
+		check = "";
+		assembler = new ArrayList<String>();
+		operandStack = new Stack<String>();
+		this.labels = new HashMap<String,String>();
+	}
 	/**
 	 * Generates the assembler code given the rpn
 	 * @param rpn the intermediate code in Reverse Polish Notation
@@ -114,23 +112,24 @@ public class CodeGenerator {
 	
 	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) throws IOException {
 		ArrayList<String> intermediateCode = rpn.get(context);
-//		this.generateLabels(intermediateCode);
+		this.generateLabels(intermediateCode);
 		OperatorFactory factory = new OperatorFactory();
 		String codeItem = new String();
 		for(int i=0; i< intermediateCode.size();i++) {
 			codeItem = intermediateCode.get(i);
 			System.out.println(codeItem);
-			//System.out.println(codeItem.toString());
-//			if(labels.containsKey(Integer.toString(i)))
-//				assembler.add("label_"+i+": ");
-				//if it's not an operator
+			//add label to assembler code
+			if(labels.containsKey(Integer.toString(i))) {
+				assembler.add(labels.get(Integer.toString(i)));
+			}
+			
+			//if it's not an operator
 			if(Pattern.matches("\\w+",codeItem)) {
-				this.operandStack.push(codeItem);
+				operandStack.push(codeItem);
 				System.out.println(operandStack.toString());
 			} else {
-				factory.create(codeItem).operate(this.operandStack);
+				factory.create(codeItem).operate(operandStack);
 				System.out.println(operandStack.toString());
-
 			} 
 			
 		} 

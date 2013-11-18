@@ -377,12 +377,12 @@ block: BEGIN declarationList executions END
 		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| BEGIN executions execution END
-	| executions execution END {
+	| BEGIN executions  END
+	| executions  END {
 		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
-	| BEGIN executions execution {
+	| BEGIN executions  {
 		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}

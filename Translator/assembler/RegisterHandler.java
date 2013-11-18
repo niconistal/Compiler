@@ -1,10 +1,5 @@
 package assembler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import Lexical.SymbolTable;
-
 /**
  * This Singleton class will manage the retrieving and availability of the registers
  * @author Inti

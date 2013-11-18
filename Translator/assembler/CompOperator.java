@@ -2,7 +2,7 @@ package assembler;
 
 import java.util.ArrayList;
 
-public abstract class CompOperator extends AbsOperator {
+public abstract class CompOperator extends AbsBinOperator {
 
 	@Override
 	public ArrayList<String> resolveMemory(Register r1, Register r2) {
