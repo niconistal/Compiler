@@ -61,8 +61,8 @@ public abstract class AbsBinOperator extends AbsOperator {
 		ArrayList<String> result = new ArrayList<String>();
 		String reg1 = registerHanlder.getRegister();
 		CodeGenerator.assembler.add("MOV "+reg1+" , "+m2.getName());
-		result.add(reg1);
 		result.add(m1.getName());
+		result.add(reg1);
 		return result;
 
 	}
