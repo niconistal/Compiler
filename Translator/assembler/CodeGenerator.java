@@ -65,7 +65,6 @@ public class CodeGenerator {
 		assembler.add("include \\masm32\\include\\user32.inc" );
 		assembler.add("includelib \\masm32\\lib\\kernel32.lib" );
 		assembler.add("includelib \\masm32\\lib\\user32.lib" );
-		 
 		
 	}
 	/**
@@ -81,8 +80,7 @@ public class CodeGenerator {
 		for(String s : idNames){
 			if(symbolTable.get(s).getUse()=="VAR"){
 				assembler.add(s +" DD ?");
-				 
-				}
+			}
 		}
 		assembler.add(".code");
 		assembler.add("start:");
@@ -96,23 +94,29 @@ public class CodeGenerator {
 	 * Generates and stores the labels for each jump
 	 * @param rpn The main RPN intermediate code
 	 */
-	private void generateLabels(ArrayList<String> rpn) {
+	private void generateLabels(ArrayList<String> rpn, String context) {
 		for(int i = 0; i< rpn.size();i++){
 			//If it's a jump instruction
 			if(Pattern.matches("\\[BF\\]|\\[JMP\\]",rpn.get(i))) {
-				this.labels.put(rpn.get(i-1), "label_"+rpn.get(i-1));
+				this.labels.put(rpn.get(i-1), context+"_label_"+rpn.get(i-1));
 			}
 		}
+	}
+	/**
+	 * Adds function declarations to the assembler code
+	 * @param rpn
+	 */
+	private void addFunctions(HashMap<String,ArrayList<String>> rpn){
+		
 	}
 	/**
 	 * Parses the intermediate code, stacking the operands, and executing the operators
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 * @throws IOException 
 	 */
-	
 	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) throws IOException {
 		ArrayList<String> intermediateCode = rpn.get(context);
-		this.generateLabels(intermediateCode);
+		this.generateLabels(intermediateCode, context);
 		OperatorFactory factory = new OperatorFactory();
 		String codeItem = new String();
 		for(int i=0; i< intermediateCode.size();i++) {
@@ -126,16 +130,12 @@ public class CodeGenerator {
 			//if it's not an operator
 			if(Pattern.matches("\\w+",codeItem)) {
 				operandStack.push(codeItem);
-				System.out.println(operandStack.toString());
 			} else {
 				factory.create(codeItem).operate(operandStack);
-				System.out.println(operandStack.toString());
 			} 
 			
 		} 
-			
-
+	}
 	
-	}
-	}
+}
 

@@ -32,6 +32,8 @@ public class OperatorFactory {
 			return new CompNotEqOperator();
 		case "[PRINT]":
 			return new PrintOperator();	
+		case "[CALL]":
+			return new FunctionCallOperator();	
 		default:
 			return null;
 		}
