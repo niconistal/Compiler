@@ -39,9 +39,9 @@ public class CodeGenerator {
 		this.addHeader();
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
-		this.addExitDeclarations();
 		this.addOverflowDeclaration();
 		this.addFunctions(rpn);
+		this.addExitDeclarations();
 		printCode(assembler);
 	}
 	
