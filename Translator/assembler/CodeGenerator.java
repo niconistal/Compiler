@@ -82,6 +82,10 @@ public class CodeGenerator {
 				assembler.add(id.toLowerCase() +" DD ?");
 			} else if(symbolTable.get(id).getType()=="CTE") {
 				assembler.add("_"+id +" DD "+id);
+			} else if(symbolTable.get(id).getType()=="CHARCHAIN") {
+				String idWhithoutSpaces = id.replaceAll("\\s", "").replaceAll("'", "");
+				String idWhithoutSingleQuotes = id.replaceAll("'", "");
+				assembler.add(idWhithoutSpaces +" DB \""+idWhithoutSingleQuotes+"\",0");
 			}
 		}
 		assembler.add(" _OFmsg DB \"OVERFLOW \",0");
@@ -148,10 +152,12 @@ public class CodeGenerator {
 			}
 			
 			//if it's not an operator
-			if(Pattern.matches("\\w+|^'",codeItem)) {
+			if(Pattern.matches("\\w+|'(\\w|\\s)*'",codeItem)) {
 				//prepend _ if operand is a constant
 				if(Pattern.matches("\\d+",codeItem)) {
 					codeItem = "_"+codeItem;
+				} else if (Pattern.matches("'(\\w|\\s)*'",codeItem)) {
+					codeItem = codeItem.replaceAll("\\s", "").replaceAll("'", "");
 				}
 				operandStack.push(codeItem);
 			} else {
