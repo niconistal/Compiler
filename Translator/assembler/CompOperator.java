@@ -34,7 +34,7 @@ public abstract class CompOperator extends AbsBinOperator {
 		RegisterHandler registerHanlder = RegisterHandler.getInstance();
 		ArrayList<String> result = new ArrayList<String>();
 		String reg1 = registerHanlder.getRegister();
-		//ADD TO FinalCodeContainer MOV reg1 v2.getName()
+		CodeGenerator.assembler.add("MOV "+reg1+" , "+v2.getName());//ADD TO FinalCodeContainer MOV reg1 v2.getName()
 		result.add(v1.getName());
 		result.add(reg1);
 		registerHanlder.freeRegister(reg1);

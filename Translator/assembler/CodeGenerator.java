@@ -124,11 +124,11 @@ public class CodeGenerator {
 			System.out.println(codeItem);
 			//add label to assembler code
 			if(labels.containsKey(Integer.toString(i))) {
-				assembler.add(labels.get(Integer.toString(i)));
+				assembler.add(labels.get(Integer.toString(i))+":");
 			}
 			
 			//if it's not an operator
-			if(Pattern.matches("\\w+",codeItem)) {
+			if(Pattern.matches("\\w+",codeItem)||codeItem.startsWith("'")) {
 				operandStack.push(codeItem);
 			} else {
 				factory.create(codeItem).operate(operandStack);

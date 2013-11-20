@@ -9,6 +9,7 @@ public class AssignOperator extends AbsBinOperator {
 		String first = operands.get(0);
 		CodeGenerator.assembler.add("MOV "+first+" , "+second);
 		//System.out.println("mov "+first+" , "+second+System.lineSeparator());
+		
 
 	}
 
@@ -20,5 +21,19 @@ public class AssignOperator extends AbsBinOperator {
 		RegisterHandler.getInstance().freeRegister(r2.getName());
 		return result;
 	}
+	
+	public  ArrayList<String> resolveMemory(Variable m1, Variable m2) {
+		RegisterHandler registerHandlder = RegisterHandler.getInstance();
+		ArrayList<String> result = new ArrayList<String>();
+		String reg1 = registerHandlder.getRegister();
+		CodeGenerator.assembler.add("MOV "+reg1+" , "+m2.getName());
+		result.add(m1.getName());
+		result.add(reg1);	
+		registerHandlder.freeRegister(reg1);
+		return result;
+
+	}
+	
+
 
 }
