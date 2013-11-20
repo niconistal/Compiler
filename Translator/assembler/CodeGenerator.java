@@ -40,6 +40,7 @@ public class CodeGenerator {
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
 		this.addExitDeclarations();
+		this.addOverflowDeclaration();
 		this.addFunctions(rpn);
 		printCode(assembler);
 	}
@@ -87,8 +88,15 @@ public class CodeGenerator {
 				assembler.add(idWhithoutSpaces +" DB \""+idWhithoutSingleQuotes+"\",0");
 			}
 		}
+		assembler.add(" _OFmsg DB \"OVERFLOW \",0");
 		assembler.add(".code");
 		assembler.add("start:");
+	}
+	
+	private void addOverflowDeclaration(){
+		assembler.add("_overflowed:");
+		assembler.add("invoke MessageBox, NULL, addr _OFmsg ,addr _OFmsg ,MB_OK");
+		assembler.add("invoke ExitProcess, 0");
 	}
 	
 	/**
