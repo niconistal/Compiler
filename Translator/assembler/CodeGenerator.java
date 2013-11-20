@@ -78,7 +78,7 @@ public class CodeGenerator {
 		Set<String> idNames =  symbolTable.keySet();
 		for(String id : idNames){
 			if(symbolTable.get(id).getUse()=="VAR"){
-				assembler.add(id +" DD ?");
+				assembler.add(id.toLowerCase() +" DD ?");
 			} else if(symbolTable.get(id).getType()=="CTE") {
 				assembler.add("_"+id +" DD "+id);
 			}
