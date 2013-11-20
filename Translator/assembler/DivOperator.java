@@ -29,7 +29,6 @@ public class DivOperator extends NonConmutativeOperator {
 	@Override
 	public ArrayList<String> resolveMemory (Variable m1, Variable m2){
 		ArrayList<String> result = new ArrayList<String>();
-		RegisterHandler regi = RegisterHandler.getInstance();
 		String rega = getRegA();
 		CodeGenerator.assembler.add("MOV "+rega+" , "+m1.getName());// MOV RA, M1
 		result.add(rega);
@@ -40,27 +39,24 @@ public class DivOperator extends NonConmutativeOperator {
 	@Override
 	public ArrayList<String> resolveMemory(Variable m1, Register r2) {
 		// TODO Auto-generated method stub
-		ArrayList<String> result = new ArrayList<String>();
 		RegisterHandler regi = RegisterHandler.getInstance();
-		String rega = regi.getRegister(RegisterHandler.REG_A);
-		//Llamar a la clase de augusto MOV RA, M1
-		//FinalCodeContainer.add("MOV "+rega+", "+m1.getName());
+		ArrayList<String> result = new ArrayList<String>();
+		String rega = getRegA();
+		CodeGenerator.assembler.add("MOV "+rega+" , "+m1.getName());// MOV RA, M1
 		result.add(rega);
 		result.add(r2.getName());
 		//El regi se va =(
 		regi.freeRegister(r2.getName());
 		return result;
 	}
-	
 	@Override
 	public ArrayList<String> resolveMemory(Register r1, Variable m2){
 		ArrayList<String> result = new ArrayList<String>();
-		if (! r1.getName().equals("A")){
+		if (! r1.getName().equals("EAX")){
 			RegisterHandler regi = RegisterHandler.getInstance();
-			String rega = regi.getRegister(RegisterHandler.REG_A);
+			String rega = getRegA();
 			regi.freeRegister(r1.getName());
-			//Aca llamo a la clase de augusto MOV RA, R1
-			//FinalCodeContainer.add("MOV "+rega", "+r1.getName());
+			CodeGenerator.assembler.add("MOV "+rega+" , "+m2.getName());// MOV RA, M1
 			result.add(rega);
 			result.add(m2.getName());
 		}else{
@@ -75,12 +71,11 @@ public class DivOperator extends NonConmutativeOperator {
 	@Override
 	public ArrayList<String> resolveMemory(Register r1, Register r2){
 		ArrayList<String> result = new ArrayList<String>();
-		if(! r1.getName().equals("A")){
+		if(! r1.getName().equals("EAX")){
 			RegisterHandler regi = RegisterHandler.getInstance();
-			String rega = regi.getRegister(RegisterHandler.REG_A);
+			String rega = getRegA();
 			regi.freeRegister(r1.getName());
-			//Aca llamo a la clase de augusto MOV RA, R1
-			//FinalCodeContainer.add("MOV "+rega", "+r1.getName());
+			CodeGenerator.assembler.add("MOV "+rega+" , "+r2.getName());// MOV RA, M1
 			result.add(rega);
 			result.add(r2.getName());
 		}else{

@@ -1,6 +1,5 @@
 package assembler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -20,11 +19,13 @@ public class CodeGenerator {
 	
 	public static Stack<String> operandStack;
 	public static String check; 
+	public static String context; 
 	private HashMap<String, String> labels;
 	public static ArrayList<String> assembler;
 	
 	public CodeGenerator() {		
 		check = "";
+		context = "";
 		assembler = new ArrayList<String>();
 		operandStack = new Stack<String>();
 		this.labels = new HashMap<String,String>();
@@ -34,10 +35,11 @@ public class CodeGenerator {
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 * @throws IOException 
 	 */
-	public void generate(HashMap<String,ArrayList<String>> rpn) throws IOException {
+	public void generate(HashMap<String,ArrayList<String>> rpn) {
 		this.addHeader();
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
+		this.addExitDeclarations();
 		this.addFunctions(rpn);
 		printCode(assembler);
 	}
@@ -52,7 +54,7 @@ public class CodeGenerator {
 	 * Add to the file the necessary libraries for the MASM
 	 * @throws IOException 
 	 */
-	private void addHeader() throws IOException{
+	private void addHeader() {
 		
 		assembler.add(".386" ); 
 		assembler.add(".model flat, stdcall" );
@@ -69,7 +71,7 @@ public class CodeGenerator {
 	 * defined in it.
 	 * @throws IOException 
 	 */
-	private void addDeclarations() throws IOException {
+	private void addDeclarations() {
 		assembler.add(".data");
 		 
 		SymbolTable symbolTable = SymbolTable.getInstance();
@@ -83,6 +85,12 @@ public class CodeGenerator {
 		}
 		assembler.add(".code");
 		assembler.add("start:");
+	}
+	
+	/**
+	 * Adds the exit declarations to the assembler code
+	 */
+	private void addExitDeclarations() {
 		assembler.add("invoke ExitProcess, 0");
 		assembler.add("end start");
 	}
@@ -119,6 +127,7 @@ public class CodeGenerator {
 	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) {
 		ArrayList<String> intermediateCode = rpn.get(context);
 		this.generateLabels(intermediateCode, context);
+		CodeGenerator.context = context;
 		OperatorFactory factory = new OperatorFactory();
 		String codeItem = new String();
 		for(int i=0; i< intermediateCode.size();i++) {
@@ -126,16 +135,28 @@ public class CodeGenerator {
 			System.out.println(codeItem);
 			//add label to assembler code
 			if(labels.containsKey(Integer.toString(i))) {
-				assembler.add(labels.get(Integer.toString(i)));
+				assembler.add(labels.get(Integer.toString(i))+":");
+				labels.remove(Integer.toString(i));
 			}
+			
 			//if it's not an operator
-			if(Pattern.matches("\\w+",codeItem)) {
+			if(Pattern.matches("\\w+|^'",codeItem)) {
+				//prepend _ if operand is a constant
+				if(Pattern.matches("\\d+",codeItem)) {
+					codeItem = "_"+codeItem;
+				}
 				operandStack.push(codeItem);
 			} else {
 				factory.create(codeItem).operate(operandStack);
 			} 
 			
 		} 
+		if(labels.values().size() > 0) {
+			ArrayList<String> remainingLabels = new ArrayList<String>(labels.values());
+			String lastLabel = remainingLabels.get(0);
+			assembler.add(lastLabel+":");
+		}
+		
 	}
 	
 }

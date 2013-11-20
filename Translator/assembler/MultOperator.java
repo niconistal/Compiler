@@ -28,7 +28,7 @@ public class MultOperator extends ConmutativeOperator {
 	public ArrayList<String> resolveMemory (Variable m1, Variable m2){
 		ArrayList<String> result = new ArrayList<String>();
 		String rega = getRegA();
-		CodeGenerator.assembler.add("MOV "+rega+" , "+m2.getName());// MOV RA, M1
+		CodeGenerator.assembler.add("MOV "+rega+" , "+m1.getName());// MOV RA, M1
 		result.add(rega);
 		result.add(m2.getName());
 		return result;
