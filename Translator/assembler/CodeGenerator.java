@@ -47,9 +47,7 @@ public class CodeGenerator {
 		for(String codeItem: assembler){
 			System.out.println(codeItem);
 		}
-		
 	}
-	
 	
 	/**
 	 * Add to the file the necessary libraries for the MASM
@@ -77,9 +75,11 @@ public class CodeGenerator {
 		 
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		Set<String> idNames =  symbolTable.keySet();
-		for(String s : idNames){
-			if(symbolTable.get(s).getUse()=="VAR"){
-				assembler.add(s +" DD ?");
+		for(String id : idNames){
+			if(symbolTable.get(id).getUse()=="VAR"){
+				assembler.add(id +" DD ?");
+			} else if(symbolTable.get(id).getType()=="CTE") {
+				assembler.add("_"+id +" DD ?");
 			}
 		}
 		assembler.add(".code");
