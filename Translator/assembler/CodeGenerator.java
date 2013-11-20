@@ -38,8 +38,7 @@ public class CodeGenerator {
 		this.addHeader();
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
-		System.out.println(rpn);
-		
+		this.addFunctions(rpn);
 		printCode(assembler);
 	}
 	
@@ -86,8 +85,6 @@ public class CodeGenerator {
 		assembler.add("start:");
 		assembler.add("invoke ExitProcess, 0");
 		assembler.add("end start");
-		 
-	
 	}
 	
 	/**
@@ -107,14 +104,19 @@ public class CodeGenerator {
 	 * @param rpn
 	 */
 	private void addFunctions(HashMap<String,ArrayList<String>> rpn){
-		
+		for(String func: rpn.keySet()) {
+			if(func != "MAIN") {
+				assembler.add("function_"+func+":");
+				this.parseIntCode(rpn,func);
+			}
+		}
 	}
 	/**
 	 * Parses the intermediate code, stacking the operands, and executing the operators
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 * @throws IOException 
 	 */
-	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) throws IOException {
+	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) {
 		ArrayList<String> intermediateCode = rpn.get(context);
 		this.generateLabels(intermediateCode, context);
 		OperatorFactory factory = new OperatorFactory();
@@ -126,7 +128,6 @@ public class CodeGenerator {
 			if(labels.containsKey(Integer.toString(i))) {
 				assembler.add(labels.get(Integer.toString(i)));
 			}
-			
 			//if it's not an operator
 			if(Pattern.matches("\\w+",codeItem)) {
 				operandStack.push(codeItem);
