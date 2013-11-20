@@ -80,7 +80,7 @@ public class CodeGenerator {
 			if(symbolTable.get(id).getUse()=="VAR"){
 				assembler.add(id +" DD ?");
 			} else if(symbolTable.get(id).getType()=="CTE") {
-				assembler.add("_"+id +" DD ?");
+				assembler.add("_"+id +" DD "+id);
 			}
 		}
 		assembler.add(".code");
