@@ -143,12 +143,16 @@ functionHeader: FUNCTION ID OPENPAREN {
 	}  singleVarDeclaration CLOSEPAREN {
 		Error error;
 		SymbolElement element = new SymbolElement();
+		//newElement will be the auxiliar variable to store de parameter passed to the current function
+		SymbolElement newElement = new SymbolElement("ID",null);
 		String varNameWithContext = "";
 		String varName = ((Token)$5.obj).getLiteralValue();
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String functionName = ((Token)$2.obj).getLiteralValue();
 		ArrayList<String> currentIntCodeVector;
 
+		//add auxiliar parameter variable
+		symbolTable.addSymbol(parserUtils.context+"_parameter",newElement);
 		//add FUNCTION use to the function identifier
 		element = symbolTable.identify(functionName);
 		element.setUse("FUNC");
@@ -253,6 +257,10 @@ functionExecution: ID OPENPAREN ID CLOSEPAREN  {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+parameterName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
+		//assign the parameter value to the auxiliar parameter previously reserved
+		currentIntCodeVector.add(functionName+"_parameter");
+		currentIntCodeVector.add(parameterName);
+		currentIntCodeVector.add("=");
 		//add function call to the intermediate code vector
 		currentIntCodeVector.add(functionName);
 		currentIntCodeVector.add("[CALL]");
