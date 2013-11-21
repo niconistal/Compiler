@@ -84,7 +84,7 @@ singleVarDeclaration: VARTYPE ID SEMICOLON {
 		varNameWithContext = parserUtils.context+"_"+varName;
 		//check if variable was already declared
 		if(symbolTable.contains(varNameWithContext)) {
-			error = new Error(Error.TYPE_FATAL,"Variable redeclartion", parserUtils.lexical.getLine());
+			error = new Error(Error.TYPE_WARNING,"Variable redeclartion", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
 		symbolTable.remove(varName);
@@ -110,7 +110,7 @@ varDeclaration: VARTYPE varList SEMICOLON {
 			varNameWithContext = parserUtils.context+"_"+varName;
 			//check if variable was already declared
 			if(symbolTable.contains(varNameWithContext)) {
-				error = new Error(Error.TYPE_FATAL,"Variable redeclartion", parserUtils.lexical.getLine());
+				error = new Error(Error.TYPE_WARNING,"Variable redeclartion", parserUtils.lexical.getLine());
 				parserUtils.errorHandler.addError(error);
 			}
 			symbolTable.remove(varName);
@@ -154,7 +154,7 @@ functionHeader: FUNCTION ID OPENPAREN {
 		element.setUse("FUNC");
 		//check for function redeclaration
 		if(symbolTable.contains(functionName)) {
-			error = new Error(Error.TYPE_FATAL,"Function redeclartion", parserUtils.lexical.getLine());
+			error = new Error(Error.TYPE_WARNING,"Function redeclartion", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
 		//initialize intermediate code vector
@@ -199,11 +199,11 @@ execution: print SEMICOLON
 
 ret: RETURN OPENPAREN retRule1 expression CLOSEPAREN SEMICOLON retRule2
 	| RETURN retRule1 expression CLOSEPAREN SEMICOLON retRule2 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	| RETURN OPENPAREN retRule1 expression  SEMICOLON retRule2 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
@@ -229,11 +229,11 @@ print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN {
 		currentIntCodeVector.add("[PRINT]");
 	}
 	| PRINT CHARCHAIN CLOSEPAREN  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	| PRINT OPENPAREN CHARCHAIN   {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in print execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
@@ -259,11 +259,11 @@ functionExecution: ID OPENPAREN ID CLOSEPAREN  {
 		currentIntCodeVector.add("rtn");
 	}
 	| ID ID CLOSEPAREN SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	| ID OPENPAREN ID SEMICOLON {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	;
@@ -327,11 +327,11 @@ selection: IF  OPENPAREN condition CLOSEPAREN THEN ifrule1 block ifrule2 ELSE bl
 	}
 	| IF OPENPAREN condition CLOSEPAREN THEN ifrule1 block ifrule3 %prec IT
 	| IF  error condition CLOSEPAREN THEN  ifrule1 block ifrule3 %prec IT  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	| IF OPENPAREN condition  error THEN ifrule1 block ifrule3 %prec IT  {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 	| IF OPENPAREN condition CLOSEPAREN ifrule1 block ifrule3 %prec IT  {
@@ -428,9 +428,9 @@ assign: ID ASSIGN {
 		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
-		} else {
-			currentIntCodeVector.add(assignSymbol);
 		}
+		currentIntCodeVector.add(assignSymbol);
+
 	};
 expression: expression PLUS term {
 		String symbol = ((Token)$2.obj).getLiteralValue();
@@ -498,9 +498,9 @@ factor: CTE {
 		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
-		} else {
-			currentIntCodeVector.add(parserUtils.context+"_"+varName);
 		}
+		currentIntCodeVector.add(parserUtils.context+"_"+varName);
+
 	}
 	| functionExecution
 	;
