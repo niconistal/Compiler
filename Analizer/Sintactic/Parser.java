@@ -465,7 +465,7 @@ final static String yyrule[] = {
 "factor : functionExecution",
 };
 
-//#line 508 "grammar.txt"
+//#line 509 "grammar.txt"
 
 String ins;
 StringTokenizer st;
@@ -735,7 +735,7 @@ case 12:
 		varNameWithContext = parserUtils.context+"_"+varName;
 		/*check if variable was already declared*/
 		if(symbolTable.contains(varNameWithContext)) {
-			error = new Error(Error.TYPE_FATAL,"Variable redeclartion", parserUtils.lexical.getLine());
+			error = new Error(Error.TYPE_WARNING,"Variable redeclartion", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
 		symbolTable.remove(varName);
@@ -763,7 +763,7 @@ case 13:
 			varNameWithContext = parserUtils.context+"_"+varName;
 			/*check if variable was already declared*/
 			if(symbolTable.contains(varNameWithContext)) {
-				error = new Error(Error.TYPE_FATAL,"Variable redeclartion", parserUtils.lexical.getLine());
+				error = new Error(Error.TYPE_WARNING,"Variable redeclartion", parserUtils.lexical.getLine());
 				parserUtils.errorHandler.addError(error);
 			}
 			symbolTable.remove(varName);
@@ -811,12 +811,13 @@ case 18:
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String functionName = ((Token)val_peek(4).obj).getLiteralValue();
 		ArrayList<String> currentIntCodeVector;
+
 		/*add FUNCTION use to the function identifier*/
 		element = symbolTable.identify(functionName);
 		element.setUse("FUNC");
 		/*check for function redeclaration*/
 		if(symbolTable.contains(functionName)) {
-			error = new Error(Error.TYPE_FATAL,"Function redeclartion", parserUtils.lexical.getLine());
+			error = new Error(Error.TYPE_WARNING,"Function redeclartion", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
 		}
 		/*initialize intermediate code vector*/
@@ -836,28 +837,28 @@ case 18:
 	}
 break;
 case 19:
-//#line 174 "grammar.txt"
+//#line 175 "grammar.txt"
 {
 		/*once the function declaration is over, set the current context as main*/
 		parserUtils.context = "main";
 	}
 break;
 case 32:
-//#line 200 "grammar.txt"
+//#line 201 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 33:
-//#line 204 "grammar.txt"
+//#line 205 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 34:
-//#line 209 "grammar.txt"
+//#line 210 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -865,7 +866,7 @@ case 34:
 	}
 break;
 case 35:
-//#line 215 "grammar.txt"
+//#line 216 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -874,7 +875,7 @@ case 35:
 	}
 break;
 case 36:
-//#line 223 "grammar.txt"
+//#line 224 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -884,21 +885,21 @@ case 36:
 	}
 break;
 case 37:
-//#line 230 "grammar.txt"
+//#line 231 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 38:
-//#line 234 "grammar.txt"
+//#line 235 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in print execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in print execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 39:
-//#line 240 "grammar.txt"
+//#line 241 "grammar.txt"
 {
 		Error error;
 		String parameterName = ((Token)val_peek(1).obj).getLiteralValue();
@@ -921,21 +922,21 @@ case 39:
 	}
 break;
 case 40:
-//#line 260 "grammar.txt"
+//#line 261 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 41:
-//#line 264 "grammar.txt"
+//#line 265 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in function execution ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in function execution ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 42:
-//#line 269 "grammar.txt"
+//#line 270 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -945,7 +946,7 @@ case 42:
 	}
 break;
 case 43:
-//#line 275 "grammar.txt"
+//#line 276 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -957,7 +958,7 @@ case 43:
 	}
 break;
 case 44:
-//#line 283 "grammar.txt"
+//#line 284 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -979,49 +980,49 @@ case 44:
 	}
 break;
 case 46:
-//#line 315 "grammar.txt"
+//#line 316 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 47:
-//#line 319 "grammar.txt"
+//#line 320 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 48:
-//#line 323 "grammar.txt"
+//#line 324 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 50:
-//#line 328 "grammar.txt"
+//#line 329 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 51:
-//#line 332 "grammar.txt"
+//#line 333 "grammar.txt"
 {
-		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 52:
-//#line 336 "grammar.txt"
+//#line 337 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 53:
-//#line 341 "grammar.txt"
+//#line 342 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -1032,7 +1033,7 @@ case 53:
 	}
 break;
 case 54:
-//#line 350 "grammar.txt"
+//#line 351 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -1046,7 +1047,7 @@ case 54:
 	}
 break;
 case 55:
-//#line 362 "grammar.txt"
+//#line 363 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -1056,7 +1057,7 @@ case 55:
 	}
 break;
 case 56:
-//#line 370 "grammar.txt"
+//#line 371 "grammar.txt"
 {
 		String comparatorSymbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1065,35 +1066,35 @@ case 56:
 	}
 break;
 case 59:
-//#line 379 "grammar.txt"
+//#line 380 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 60:
-//#line 383 "grammar.txt"
+//#line 384 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 62:
-//#line 388 "grammar.txt"
+//#line 389 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing BEGIN in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 63:
-//#line 392 "grammar.txt"
+//#line 393 "grammar.txt"
 {
 		Error error = new Error(Error.TYPE_FATAL,"Missing END in block  ", parserUtils.lexical.getLine());
 		parserUtils.errorHandler.addError(error);
 	}
 break;
 case 67:
-//#line 400 "grammar.txt"
+//#line 401 "grammar.txt"
 {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -1102,7 +1103,7 @@ case 67:
 	}
 break;
 case 68:
-//#line 405 "grammar.txt"
+//#line 406 "grammar.txt"
 {
 		Error error;
 		String varName = ((Token)val_peek(3).obj).getLiteralValue();
@@ -1128,13 +1129,13 @@ case 68:
 		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
-		} else {
-			currentIntCodeVector.add(assignSymbol);
 		}
+		currentIntCodeVector.add(assignSymbol);
+
 	}
 break;
 case 69:
-//#line 434 "grammar.txt"
+//#line 435 "grammar.txt"
 {
 		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1143,7 +1144,7 @@ case 69:
 	}
 break;
 case 70:
-//#line 440 "grammar.txt"
+//#line 441 "grammar.txt"
 {
 		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1152,7 +1153,7 @@ case 70:
 	}
 break;
 case 72:
-//#line 449 "grammar.txt"
+//#line 450 "grammar.txt"
 {
 		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1161,7 +1162,7 @@ case 72:
 	}
 break;
 case 73:
-//#line 455 "grammar.txt"
+//#line 456 "grammar.txt"
 {
 		String symbol = ((Token)val_peek(1).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1170,7 +1171,7 @@ case 73:
 	}
 break;
 case 75:
-//#line 464 "grammar.txt"
+//#line 465 "grammar.txt"
 {
 		String varName = ((Token)val_peek(0).obj).getLiteralValue();
 		String context = parserUtils.context;
@@ -1185,7 +1186,7 @@ case 75:
 	}
 break;
 case 76:
-//#line 476 "grammar.txt"
+//#line 477 "grammar.txt"
 {
 		Error error;
 		String varName = ((Token)val_peek(0).obj).getLiteralValue();
@@ -1210,12 +1211,12 @@ case 76:
 		if(!found) {
 			error = new Error(Error.TYPE_FATAL,"Identifier "+varName+" not found.", parserUtils.lexical.getLine());
 			parserUtils.errorHandler.addError(error);
-		} else {
-			currentIntCodeVector.add(parserUtils.context+"_"+varName);
 		}
+		currentIntCodeVector.add(parserUtils.context+"_"+varName);
+
 	}
 break;
-//#line 1142 "Parser.java"
+//#line 1143 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
