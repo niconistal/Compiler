@@ -11,6 +11,7 @@ public class DivOperator extends NonConmutativeOperator {
 		// regs[B,C,D,A] que el A se ocupe ultimo
 		String first = operands.get(0);
 		String second = operands.get(1);
+		CodeGenerator.assembler.add("sub edx, edx");
 		CodeGenerator.assembler.add("idiv "+second);
 		CodeGenerator.operandStack.push(first); //must be EAX
 		//System.out.println("idiv "+first+System.lineSeparator());
