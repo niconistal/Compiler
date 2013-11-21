@@ -870,7 +870,7 @@ case 35:
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		currentIntCodeVector.add("=");
-		currentIntCodeVector.add("RET");
+		currentIntCodeVector.add("[RET]");
 	}
 break;
 case 36:
