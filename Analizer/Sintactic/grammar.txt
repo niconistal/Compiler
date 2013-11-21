@@ -148,6 +148,7 @@ functionHeader: FUNCTION ID OPENPAREN {
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		String functionName = ((Token)$2.obj).getLiteralValue();
 		ArrayList<String> currentIntCodeVector;
+
 		//add FUNCTION use to the function identifier
 		element = symbolTable.identify(functionName);
 		element.setUse("FUNC");
@@ -196,25 +197,30 @@ execution: print SEMICOLON
 	| assign SEMICOLON
 	;
 
-ret: RETURN OPENPAREN {
+ret: RETURN OPENPAREN retRule1 expression CLOSEPAREN SEMICOLON retRule2
+	| RETURN retRule1 expression CLOSEPAREN SEMICOLON retRule2 {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	| RETURN OPENPAREN retRule1 expression  SEMICOLON retRule2 {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	;
+retRule1: {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		currentIntCodeVector.add("rtn");
-	}expression CLOSEPAREN SEMICOLON {
+	}
+	;
+retRule2: {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		currentIntCodeVector.add("=");
-		currentIntCodeVector.add("RET");
+		currentIntCodeVector.add("[RET]");
 	}
-	// | RETURN expression CLOSEPAREN SEMICOLON {
-	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
-	// | RETURN OPENPAREN expression  SEMICOLON {
-	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in return execution ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
 	;
+
 print: PRINT OPENPAREN CHARCHAIN CLOSEPAREN {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
@@ -294,7 +300,6 @@ iteration: FOR OPENPAREN assign SEMICOLON {
 		falseBifurcationDirection = Integer.toString(currentIntCodeVector.size());
 		currentIntCodeVector.set(falseBifurcationIndex,falseBifurcationDirection);
 	};
-	//TODO uncomment fowolling rules when parsing conflicts are resolved
 
 	// | FOR assign SEMICOLON condition CLOSEPAREN declarationList executions  {
 	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in iteration execution  ", parserUtils.lexical.getLine());
@@ -305,15 +310,45 @@ iteration: FOR OPENPAREN assign SEMICOLON {
 	// 	parserUtils.errorHandler.addError(error);
 	// }
 	;
-selection: IF  OPENPAREN condition CLOSEPAREN THEN {
+
+selection: IF  OPENPAREN condition CLOSEPAREN THEN ifrule1 block ifrule2 ELSE block ifrule3
+
+	| IF   condition CLOSEPAREN THEN ifrule1 block ifrule2 ELSE  block ifrule3 {
+		Error error = new Error(Error.TYPE_FATAL,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	| IF  OPENPAREN condition  THEN ifrule1 block ifrule2 ELSE  block ifrule3 {
+		Error error = new Error(Error.TYPE_FATAL,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	| IF  OPENPAREN condition CLOSEPAREN ifrule1  block ifrule2 ELSE  block ifrule3 {
+		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	| IF OPENPAREN condition CLOSEPAREN THEN ifrule1 block ifrule3 %prec IT
+	| IF  error condition CLOSEPAREN THEN  ifrule1 block ifrule3 %prec IT  {
+		Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	| IF OPENPAREN condition  error THEN ifrule1 block ifrule3 %prec IT  {
+		Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	| IF OPENPAREN condition CLOSEPAREN ifrule1 block ifrule3 %prec IT  {
+		Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
+		parserUtils.errorHandler.addError(error);
+	}
+	;
+ifrule1: {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		//save the index where the false bifurcation will be stored
 		currentIntCodeVector.add("PLACEHOLDER");
 		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
 		currentIntCodeVector.add("[BF]");
-
-	} block {
+	}
+	;
+ifrule2: {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		String elseBlockDirection = Integer.toString(currentIntCodeVector.size()+2);
@@ -323,42 +358,15 @@ selection: IF  OPENPAREN condition CLOSEPAREN THEN {
 		currentIntCodeVector.add("PLACEHOLDER");
 		parserUtils.indexStack.add(currentIntCodeVector.size()-1);
 		currentIntCodeVector.add("[JMP]");
-	} ELSE block {
+	}
+	;
+ifrule3: {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		String endBlockDirection = Integer.toString(currentIntCodeVector.size());
 		Integer endBlockIndex = parserUtils.indexStack.remove(parserUtils.indexStack.size()-1);
 		currentIntCodeVector.set(endBlockIndex,endBlockDirection);
 	}
-
-
-	//TODO uncomment these lines when parsing conflicts are resolved
-
-	// | IF  condition CLOSEPAREN THEN block  ELSE  block  {
-	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
-	// | IF  OPENPAREN condition  THEN block  ELSE  block  {
-	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
-	// | IF  OPENPAREN condition   block  ELSE  block  {
-	// 	Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
-	// | IF OPENPAREN condition CLOSEPAREN THEN block %prec IT
-	// | IF  condition CLOSEPAREN THEN block %prec IT  {
-	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in IF statement  ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
-	// | IF OPENPAREN condition  THEN block %prec IT  {
-	// 	Error error = new Error(Error.TYPE_WARNING,"Missing right paretheses in IF statement  ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
-	// | IF OPENPAREN condition CLOSEPAREN  block %prec IT  {
-	// 	Error error = new Error(Error.TYPE_FATAL,"Missing THEN in IF statement  ", parserUtils.lexical.getLine());
-	// 	parserUtils.errorHandler.addError(error);
-	// }
 	;
 condition: expression COMPARATOR expression {
 		String comparatorSymbol = ((Token)$2.obj).getLiteralValue();

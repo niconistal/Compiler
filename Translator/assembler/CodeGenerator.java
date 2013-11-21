@@ -144,7 +144,6 @@ public class CodeGenerator {
 		String codeItem = new String();
 		for(int i=0; i< intermediateCode.size();i++) {
 			codeItem = intermediateCode.get(i);
-			System.out.println(codeItem);
 			//add label to assembler code
 			if(labels.containsKey(Integer.toString(i))) {
 				assembler.add(labels.get(Integer.toString(i))+":");
