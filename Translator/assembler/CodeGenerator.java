@@ -78,7 +78,7 @@ public class CodeGenerator {
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		Set<String> idNames =  symbolTable.keySet();
 		for(String id : idNames){
-			if(symbolTable.get(id).getUse()=="VAR"){
+			if(symbolTable.get(id).getUse()=="VAR" || symbolTable.get(id).getUse()=="PARAM"){
 				assembler.add(id.toLowerCase() +" DD ?");
 			} else if(symbolTable.get(id).getType()=="CTE") {
 				assembler.add("_"+id +" DD "+id);
@@ -120,6 +120,14 @@ public class CodeGenerator {
 		}
 	}
 	/**
+	 * Returns true is the varName is identified as a parameter
+	 * @param varName the variable name
+	 * @return {boolean}
+	 */
+	public static boolean isParameter(String varName) {
+		return Pattern.matches("^@\\w+", varName);
+	}
+	/**
 	 * Adds function declarations to the assembler code
 	 * @param rpn
 	 */
@@ -152,6 +160,10 @@ public class CodeGenerator {
 			
 			//if it's not an operator
 			if(Pattern.matches("\\w+|'(\\w|\\s)*'",codeItem)) {
+				//identify if the operand is a parameter
+				if(SymbolTable.getInstance().get(codeItem)!=null && SymbolTable.getInstance().get(codeItem).getUse()=="PARAM") {
+					codeItem = "@"+codeItem;
+				}
 				//prepend _ if operand is a constant
 				if(Pattern.matches("\\d+",codeItem)) {
 					codeItem = "_"+codeItem;

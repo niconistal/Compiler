@@ -7,7 +7,14 @@ public class AssignOperator extends AbsBinOperator {
 	public void generate(ArrayList<String> operands) { 
 		String second = operands.get(1);
 		String first = operands.get(0);
-		CodeGenerator.assembler.add("MOV "+first+" , "+second);
+		if(CodeGenerator.isParameter(first)) {
+			//mov ebx, first
+			//mov ecx second
+			//mov [ebx] ecx
+		} else {
+			CodeGenerator.assembler.add("MOV "+first+" , "+second);
+		}
+		
 		//System.out.println("mov "+first+" , "+second+System.lineSeparator());
 		
 
@@ -21,7 +28,7 @@ public class AssignOperator extends AbsBinOperator {
 		RegisterHandler.getInstance().freeRegister(r2.getName());
 		return result;
 	}
-	
+	@Override
 	public  ArrayList<String> resolveMemory(Variable m1, Variable m2) {
 		RegisterHandler registerHandlder = RegisterHandler.getInstance();
 		ArrayList<String> result = new ArrayList<String>();
@@ -32,6 +39,20 @@ public class AssignOperator extends AbsBinOperator {
 		registerHandlder.freeRegister(reg1);
 		return result;
 
+	}
+	
+	@Override
+	public ArrayList<String> resolveParameters(String var1, String var2) {
+		ArrayList<String> result = new ArrayList<String>(); 
+		result.add(var1);
+		if(CodeGenerator.isParameter(var2)) {
+			//mov ebx, var2
+			//mov ecx, [ebx]
+			result.add("ecx");
+		} else {
+			result.add(var2);
+		}
+		return result;
 	}
 	
 
