@@ -34,6 +34,8 @@ public class OperatorFactory {
 			return new PrintOperator();	
 		case "[CALL]":
 			return new FunctionCallOperator();	
+		case "[RET]":
+			return new FunctionRetOperator();	
 		default:
 			return null;
 		}

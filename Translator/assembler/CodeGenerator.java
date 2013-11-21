@@ -94,6 +94,7 @@ public class CodeGenerator {
 	}
 	
 	private void addOverflowDeclaration(){
+		assembler.add("invoke ExitProcess, 0");
 		assembler.add("_overflowed:");
 		assembler.add("invoke MessageBox, NULL, addr _OFmsg ,addr _OFmsg ,MB_OK");
 		assembler.add("invoke ExitProcess, 0");
@@ -103,7 +104,6 @@ public class CodeGenerator {
 	 * Adds the exit declarations to the assembler code
 	 */
 	private void addExitDeclarations() {
-		assembler.add("invoke ExitProcess, 0");
 		assembler.add("end start");
 	}
 	
@@ -126,7 +126,7 @@ public class CodeGenerator {
 	private void addFunctions(HashMap<String,ArrayList<String>> rpn){
 		for(String func: rpn.keySet()) {
 			if(func != "MAIN") {
-				assembler.add("function_"+func+":");
+				assembler.add("label_"+func.toLowerCase()+":");
 				this.parseIntCode(rpn,func);
 			}
 		}

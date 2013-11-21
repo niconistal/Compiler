@@ -204,7 +204,7 @@ ret: RETURN OPENPAREN {
 		String context = parserUtils.context;
 		ArrayList<String> currentIntCodeVector = parserUtils.intermediateCode.get(context.toUpperCase());
 		currentIntCodeVector.add("=");
-		currentIntCodeVector.add("RET");
+		currentIntCodeVector.add("[RET]");
 	}
 	// | RETURN expression CLOSEPAREN SEMICOLON {
 	// 	Error error = new Error(Error.TYPE_WARNING,"Missing left paretheses in return execution ", parserUtils.lexical.getLine());
