@@ -458,7 +458,7 @@ factor: CTE {
 		element = symbolTable.identify(varName);
 		//The only allowed type for constants is ULONG
 		element.setVarType("ULONG");
-		currentIntCodeVector.add(context+"_"+varName);
+		currentIntCodeVector.add(varName);
 	}
 	| ID {
 		Error error;
@@ -506,7 +506,7 @@ public class ParserUtils {
 	ArrayList<String> variableList = new ArrayList<String>();
 	//there will be one reverse polish vector for each function, and one for the main. Each vector
 	//will be able to be accessed by the context name
-	HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
+	public HashMap<String,ArrayList<String>> intermediateCode = new HashMap<String,ArrayList<String>>();
 	ErrorHandler errorHandler = ErrorHandler.getInstance();
 	LexicalAnalizer lexical = new LexicalAnalizer(PathContainer.getPath());
 	String context = "main";
@@ -516,7 +516,7 @@ public class ParserUtils {
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
 }
 
-private ParserUtils parserUtils = new ParserUtils();
+public ParserUtils parserUtils = new ParserUtils();
 
 int yylex() {
 	Token token = parserUtils.lexical.getToken();
