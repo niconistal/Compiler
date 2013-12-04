@@ -2,7 +2,7 @@ package assembler;
 
 import java.util.ArrayList;
 
-public abstract class CompOperator extends AbsOperator {
+public abstract class CompOperator extends AbsBinOperator {
 
 	@Override
 	public ArrayList<String> resolveMemory(Register r1, Register r2) {
@@ -34,7 +34,7 @@ public abstract class CompOperator extends AbsOperator {
 		RegisterHandler registerHanlder = RegisterHandler.getInstance();
 		ArrayList<String> result = new ArrayList<String>();
 		String reg1 = registerHanlder.getRegister();
-		//ADD TO FinalCodeContainer MOV reg1 v2.getName()
+		CodeGenerator.assembler.add("MOV "+reg1+" , "+v2.getName());//ADD TO FinalCodeContainer MOV reg1 v2.getName()
 		result.add(v1.getName());
 		result.add(reg1);
 		registerHanlder.freeRegister(reg1);

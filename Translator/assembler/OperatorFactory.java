@@ -14,8 +14,28 @@ public class OperatorFactory {
 			return new DivOperator();
 		case "[JMP]":
 			return new JumpOperator();
+		case "[BF]":
+			return new BFOperator();	
 		case "=":
 			return new AssignOperator();
+		case "==":
+			return new CompEqOperator();
+		case ">=":
+			return new CompGreatEqOperator();
+		case ">":
+			return new CompGreatOperator();
+		case "<=":
+			return new CompLessEqOperator();
+		case "<":
+			return new CompLessOperator();
+		case "!=":
+			return new CompNotEqOperator();
+		case "[PRINT]":
+			return new PrintOperator();	
+		case "[CALL]":
+			return new FunctionCallOperator();	
+		case "[RET]":
+			return new FunctionRetOperator();	
 		default:
 			return null;
 		}

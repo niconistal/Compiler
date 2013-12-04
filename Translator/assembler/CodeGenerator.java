@@ -1,17 +1,11 @@
 package assembler;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-import Lexical.SymbolElement;
 import Lexical.SymbolTable;
 
 
@@ -24,24 +18,30 @@ import Lexical.SymbolTable;
 public class CodeGenerator {
 	
 	public static Stack<String> operandStack;
+	public static String check; 
+	public static String context; 
 	private HashMap<String, String> labels;
 	public static ArrayList<String> assembler;
 	
 	public CodeGenerator() {		
-		assembler =new ArrayList<String>();
-		operandStack =new Stack<String>();
-		}
+		check = "";
+		context = "";
+		assembler = new ArrayList<String>();
+		operandStack = new Stack<String>();
+		this.labels = new HashMap<String,String>();
+	}
 	/**
 	 * Generates the assembler code given the rpn
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 * @throws IOException 
 	 */
-	public void generate(HashMap<String,ArrayList<String>> rpn) throws IOException {
+	public void generate(HashMap<String,ArrayList<String>> rpn) {
 		this.addHeader();
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
-		System.out.println(rpn);
-		
+		this.addOverflowDeclaration();
+		this.addFunctions(rpn);
+		this.addExitDeclarations();
 		printCode(assembler);
 	}
 	
@@ -49,15 +49,13 @@ public class CodeGenerator {
 		for(String codeItem: assembler){
 			System.out.println(codeItem);
 		}
-		
 	}
-	
 	
 	/**
 	 * Add to the file the necessary libraries for the MASM
 	 * @throws IOException 
 	 */
-	private void addHeader() throws IOException{
+	private void addHeader() {
 		
 		assembler.add(".386" ); 
 		assembler.add(".model flat, stdcall" );
@@ -67,7 +65,6 @@ public class CodeGenerator {
 		assembler.add("include \\masm32\\include\\user32.inc" );
 		assembler.add("includelib \\masm32\\lib\\kernel32.lib" );
 		assembler.add("includelib \\masm32\\lib\\user32.lib" );
-		 
 		
 	}
 	/**
@@ -75,34 +72,70 @@ public class CodeGenerator {
 	 * defined in it.
 	 * @throws IOException 
 	 */
-	private void addDeclarations() throws IOException {
+	private void addDeclarations() {
 		assembler.add(".data");
 		 
 		SymbolTable symbolTable = SymbolTable.getInstance();
 		Set<String> idNames =  symbolTable.keySet();
-		for(String s : idNames){
-			if(symbolTable.get(s).getUse()=="VAR"){
-				assembler.add(s +" DD ?");
-				 
-				}
+		for(String id : idNames){
+			if(symbolTable.get(id).getUse()=="VAR" || symbolTable.get(id).getUse()=="PARAM"){
+				assembler.add(id.toLowerCase() +" DD ?");
+			} else if(symbolTable.get(id).getType()=="CTE") {
+				assembler.add("_"+id +" DD "+id);
+			} else if(symbolTable.get(id).getType()=="CHARCHAIN") {
+				String idWhithoutSpaces = id.replaceAll("\\s", "").replaceAll("'", "");
+				String idWhithoutSingleQuotes = id.replaceAll("'", "");
+				assembler.add(idWhithoutSpaces +" DB \""+idWhithoutSingleQuotes+"\",0");
+			}
 		}
+		assembler.add(" _OFmsg DB \"OVERFLOW \",0");
 		assembler.add(".code");
 		assembler.add("start:");
-		assembler.add("invoke ExitProcess, 0");
-		assembler.add("end start");
-		 
+	}
 	
+	private void addOverflowDeclaration(){
+		assembler.add("invoke ExitProcess, 0");
+		assembler.add("_overflowed:");
+		assembler.add("invoke MessageBox, NULL, addr _OFmsg ,addr _OFmsg ,MB_OK");
+		assembler.add("invoke ExitProcess, 0");
+	}
+	
+	/**
+	 * Adds the exit declarations to the assembler code
+	 */
+	private void addExitDeclarations() {
+		assembler.add("end start");
 	}
 	
 	/**
 	 * Generates and stores the labels for each jump
 	 * @param rpn The main RPN intermediate code
 	 */
-	private void generateLabels(ArrayList<String> rpn) {
+	private void generateLabels(ArrayList<String> rpn, String context) {
 		for(int i = 0; i< rpn.size();i++){
 			//If it's a jump instruction
 			if(Pattern.matches("\\[BF\\]|\\[JMP\\]",rpn.get(i))) {
-				this.labels.put(rpn.get(i-1), "label_"+rpn.get(i-1));
+				this.labels.put(rpn.get(i-1), context+"_label_"+rpn.get(i-1));
+			}
+		}
+	}
+	/**
+	 * Returns true is the varName is identified as a parameter
+	 * @param varName the variable name
+	 * @return {boolean}
+	 */
+	public static boolean isParameter(String varName) {
+		return Pattern.matches("^@\\w+", varName);
+	}
+	/**
+	 * Adds function declarations to the assembler code
+	 * @param rpn
+	 */
+	private void addFunctions(HashMap<String,ArrayList<String>> rpn){
+		for(String func: rpn.keySet()) {
+			if(func != "MAIN") {
+				assembler.add("label_"+func.toLowerCase()+":");
+				this.parseIntCode(rpn,func);
 			}
 		}
 	}
@@ -111,32 +144,45 @@ public class CodeGenerator {
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 * @throws IOException 
 	 */
-	
-	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) throws IOException {
+	private void parseIntCode(HashMap<String,ArrayList<String>> rpn, String context) {
 		ArrayList<String> intermediateCode = rpn.get(context);
-//		this.generateLabels(intermediateCode);
+		this.generateLabels(intermediateCode, context);
+		CodeGenerator.context = context;
 		OperatorFactory factory = new OperatorFactory();
 		String codeItem = new String();
 		for(int i=0; i< intermediateCode.size();i++) {
 			codeItem = intermediateCode.get(i);
-			System.out.println(codeItem);
-			//System.out.println(codeItem.toString());
-//			if(labels.containsKey(Integer.toString(i)))
-//				assembler.add("label_"+i+": ");
-				//if it's not an operator
-			if(Pattern.matches("\\w+",codeItem)) {
-				this.operandStack.push(codeItem);
-				System.out.println(operandStack.toString());
+			//add label to assembler code
+			if(labels.containsKey(Integer.toString(i))) {
+				assembler.add(labels.get(Integer.toString(i))+":");
+				labels.remove(Integer.toString(i));
+			}
+			
+			//if it's not an operator
+			if(Pattern.matches("\\w+|'(\\w|\\s)*'",codeItem)) {
+				//identify if the operand is a parameter
+				if(SymbolTable.getInstance().get(codeItem)!=null && SymbolTable.getInstance().get(codeItem).getUse()=="PARAM") {
+					codeItem = "@"+codeItem;
+				}
+				//prepend _ if operand is a constant
+				if(Pattern.matches("\\d+",codeItem)) {
+					codeItem = "_"+codeItem;
+				} else if (Pattern.matches("'(\\w|\\s)*'",codeItem)) {
+					codeItem = codeItem.replaceAll("\\s", "").replaceAll("'", "");
+				}
+				operandStack.push(codeItem);
 			} else {
-				factory.create(codeItem).operate(this.operandStack);
-				System.out.println(operandStack.toString());
-
+				factory.create(codeItem).operate(operandStack);
 			} 
 			
 		} 
-			
-
+		if(labels.values().size() > 0) {
+			ArrayList<String> remainingLabels = new ArrayList<String>(labels.values());
+			String lastLabel = remainingLabels.get(0);
+			assembler.add(lastLabel+":");
+		}
+		
+	}
 	
-	}
-	}
+}
 

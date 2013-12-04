@@ -1,9 +1,8 @@
 package assembler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class ConmutativeOperator extends AbsOperator {
+public abstract class ConmutativeOperator extends AbsBinOperator {
 
 	@Override
 	public ArrayList<String> resolveMemory(Variable m1, Register r2) {
