@@ -18,7 +18,7 @@ import Lexical.Token;
 public class RangeChecker implements ISemanticAction {
 
 	private static long MIN_RANGE = 0L;
-	private static long MAX_RANGE = 4294967295L;
+	private static long MAX_RANGE = 65535L;
 	
 	@Override
 	public void performAction(Token tok, StringCharacterIterator source,int[] line) {
