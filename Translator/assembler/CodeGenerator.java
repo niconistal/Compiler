@@ -144,7 +144,7 @@ public class CodeGenerator {
 	private void addOverflowDeclaration(){
 		assembler.add("invoke ExitProcess, 0");
 		assembler.add("_overflowed:");
-		assembler.add("invoke MessageBox, NULL, addr _OFmsg ,addr _OFmsg ,MB_OK");
+		assembler.add("invoke MessageBox, NULL, addr _OFmsg ,addr _OFmsg ,MB_ICONERROR");
 		assembler.add("invoke ExitProcess, 0");
 	}
 	
