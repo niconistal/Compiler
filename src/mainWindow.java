@@ -19,7 +19,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JScrollBar;
 
 import assembler.CodeGenerator;
 import utils.PathContainer;

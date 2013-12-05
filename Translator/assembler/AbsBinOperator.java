@@ -14,6 +14,7 @@ public abstract class AbsBinOperator extends AbsOperator {
 	public void operate(Stack<String> operandStack) {
 		String op2 = operandStack.pop();
 		String op1 = operandStack.pop();
+		
 		ArrayList<String> resolvedParameters = this.resolveParameters(op2,op1);
 		op2 = resolvedParameters.get(0);
 		op1 = resolvedParameters.get(1);
@@ -30,27 +31,39 @@ public abstract class AbsBinOperator extends AbsOperator {
 			Variable v1 = new Variable(op1);
 			Register r2 = new Register(op2);
 			resolvedOperands = this.resolveMemory(v1, r2);
-		} else {
+		} else if(!CodeGenerator.isParameter(op1) && !CodeGenerator.isParameter(op2)){
 			Variable v1 = new Variable(op1);
 			Variable v2 = new Variable(op2);
 			resolvedOperands = this.resolveMemory(v1, v2);
+				
+		}
+		else{
+			resolvedOperands.add(op1);
+			resolvedOperands.add(op2);
 		}
 		this.generate(resolvedOperands);
 	}
 	
 	public ArrayList<String> resolveParameters(String var1, String var2) {
 		ArrayList<String> result = new ArrayList<String>(); 
+		RegisterHandler regi = RegisterHandler.getInstance();
 		if(CodeGenerator.isParameter(var1)) {
-			//mov ebx, var1
-			//mov ecx, [ebx]
-			result.add("ecx");
+			String reg1 = regi.getRegister();
+			String reg2 = regi.getRegister();
+			CodeGenerator.assembler.add("MOV "+reg1+","+var1);//mov ebx, var1 //reservar un registro1
+			CodeGenerator.assembler.add("MOV "+reg2+",["+reg1+"]");//mov ecx, [ebx] //reservar otro registro2
+			regi.freeRegister(reg1);//liberar el registro1
+			result.add(reg2);
 		} else {
 			result.add(var1);
 		}
 		if(CodeGenerator.isParameter(var2)) {
-			//mov ebx, var2
-			//mov ecx, [ebx]
-			result.add("ecx");
+			String reg1 = regi.getRegister();
+			String reg2 = regi.getRegister();
+			CodeGenerator.assembler.add("MOV "+reg1+","+var2);//mov ebx, var2 //reservar un registro1
+			CodeGenerator.assembler.add("MOV "+reg2+",["+reg1+"]");//mov ecx, [ebx] //reservar otro registro2
+			regi.freeRegister(reg1);//liberar el registro1
+			result.add(reg2);
 		} else {
 			result.add(var2);
 		}
@@ -79,6 +92,7 @@ public abstract class AbsBinOperator extends AbsOperator {
 	 * @return
 	 */
 	public  ArrayList<String> resolveMemory(Variable m1, Variable m2) {
+		System.out.println();
 		RegisterHandler registerHandlder = RegisterHandler.getInstance();
 		ArrayList<String> result = new ArrayList<String>();
 		String reg1 = registerHandlder.getRegister();
