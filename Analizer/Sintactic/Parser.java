@@ -18,17 +18,24 @@
 
 //#line 2 "grammar.txt"
 package Sintactic;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
+
 import Lexical.LexicalAnalizer;
 import Lexical.Token;
 import Lexical.ErrorHandler;
 import Lexical.Error;
 import Lexical.SymbolTable;
+
 import java.util.ArrayList;
+
 import utils.PathContainer;
 import Lexical.SymbolElement;
+
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 
 //#line 32 "Parser.java"
@@ -488,6 +495,32 @@ public class ParserUtils {
 	String forConditionVar;
 	//a stack to handle index handling in IF and FOR statements
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
+	
+	public String toString(){
+		String stringvar = new String();
+		
+		String newline = System.getProperty("line.separator");
+		
+		Set<String> keys = this.intermediateCode.keySet();
+		for (String key : keys){
+			stringvar += key.toUpperCase() + " -> ";
+			stringvar += this.intermediateCode.get(key).toString();
+			stringvar += newline;
+		}
+		
+		return stringvar;
+	}
+	
+	public void godSaveThePolish(){
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter("polish.txt");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out.println(this.toString());
+	}
 }
 
 public ParserUtils parserUtils = new ParserUtils();
