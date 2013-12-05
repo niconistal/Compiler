@@ -506,6 +506,7 @@ public class ParserUtils {
 			stringvar += key.toUpperCase() + " -> ";
 			stringvar += this.intermediateCode.get(key).toString();
 			stringvar += newline;
+			stringvar += newline;
 		}
 		
 		return stringvar;
@@ -520,6 +521,8 @@ public class ParserUtils {
 			e.printStackTrace();
 		}
 		out.println(this.toString());
+		out.flush();
+		
 	}
 }
 

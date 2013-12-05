@@ -1,0 +1,9 @@
+MAIN -> [main_var1, 0, =, main_var2, 2, =, main_var3, 1, =, main_var1, fun1_parameter, main_var2, [LEA], fun1, [CALL], rtn, =, main_var1, 9, ==, 26, [BF], 'dio 9', [PRINT], 28, [JMP], 'no dio 9', [PRINT], main_var1, fun1_parameter, main_var1, [LEA], fun1, [CALL], rtn, =, main_var1, 9, ==, 45, [BF], 'dio 9', [PRINT], 47, [JMP], 'no dio 9', [PRINT], main_var2, fun2_parameter, main_var1, [LEA], fun2, [CALL], rtn, =, main_var2, 36, ==, 64, [BF], 'dio 36', [PRINT], 66, [JMP], 'no dio 36', [PRINT], main_count, main_var3, =, main_count, 1, 1, +, 1, +, <=, 94, [BF], main_var4, 2, =, fun3_parameter, main_var4, [LEA], fun3, [CALL], rtn, main_count, main_count, 1, +, =, 69, [JMP], main_var3, 3, =, main_count, main_var3, =, main_count, 16, 4, /, 1, *, <=, 130, [BF], main_var9, 22, =, main_var9, 22, ==, 121, [BF], 'dio 22', [PRINT], 123, [JMP], 'no dio 22', [PRINT], main_count, main_count, 1, +, =, 100, [JMP]]
+
+FUN1 -> [fun1_aux1, fun1_parameter, =, rtn, 0, =, 'inside fun 1', [PRINT], fun1_var9, 0, =, fun1_var9, fun1_aux1, 2, +, 10, 2, /, +, =, rtn, fun1_var9, =, [RET]]
+
+FUN2 -> [fun2_aux2, fun2_parameter, =, rtn, 0, =, 'inside fun 2', [PRINT], fun2_var29, 1, 2, 3, *, +, 20, 5, /, -, 6, 7, *, +, 18, -, 9, +, =, rtn, fun2_var29, =, [RET]]
+
+FUN3 -> [fun3_aux2, fun3_parameter, =, rtn, 0, =, fun3_none, 0, =, 'inside function call  by FOR', [PRINT], rtn, fun3_none, =, [RET]]
+
+
