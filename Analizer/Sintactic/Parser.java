@@ -834,6 +834,12 @@ case 18:
 		parserUtils.variableList.clear();
 		/*default to 0 the return value*/
 		currentIntCodeVector = parserUtils.intermediateCode.get(parserUtils.context.toUpperCase());
+		
+		//add direction to function parameter
+		currentIntCodeVector.add(((Token)val_peek(4).obj).getLiteralValue()+"_"+((Token)val_peek(1).obj).getLiteralValue()); //function variable
+		currentIntCodeVector.add(((Token)val_peek(4).obj).getLiteralValue()+"_parameter"); //auxiliar
+		currentIntCodeVector.add("=");
+		
 		currentIntCodeVector.add("rtn");
 		currentIntCodeVector.add("0");
 		currentIntCodeVector.add("=");
@@ -921,8 +927,13 @@ case 39:
 		}
 		/*assign the parameter value to the auxiliar parameter previously reserved*/
 		currentIntCodeVector.add(functionName+"_parameter");
-		currentIntCodeVector.add(parameterName);
-		currentIntCodeVector.add("=");
+		
+			SymbolElement SE = new SymbolElement();
+			SE.setUse("VAR");
+			SE.setType("PARAM");
+			symbolTable.addSymbol(functionName+"_parameter", SE);
+		currentIntCodeVector.add(context+"_"+parameterName);
+		currentIntCodeVector.add("[LEA]");
 		/*add function call to the intermediate code vector*/
 		currentIntCodeVector.add(functionName);
 		currentIntCodeVector.add("[CALL]");

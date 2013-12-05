@@ -1,11 +1,21 @@
 package assembler;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+import Lexical.SymbolElement;
 import Lexical.SymbolTable;
 
 
@@ -35,20 +45,54 @@ public class CodeGenerator {
 	 * @param rpn the intermediate code in Reverse Polish Notation
 	 * @throws IOException 
 	 */
-	public void generate(HashMap<String,ArrayList<String>> rpn) {
+	public void generate(HashMap<String,ArrayList<String>> rpn) throws IOException {
 		this.addHeader();
 		this.addDeclarations();
 		this.parseIntCode(rpn, "MAIN");
 		this.addOverflowDeclaration();
 		this.addFunctions(rpn);
 		this.addExitDeclarations();
+		save(assembler);
 		printCode(assembler);
 	}
 	
-	public static void printCode(ArrayList<String> assembler){
-		for(String codeItem: assembler){
-			System.out.println(codeItem);
-		}
+	public void save(ArrayList<String> assembler) throws IOException {
+	    PrintWriter pw = new PrintWriter(new FileOutputStream("code.asm"));
+	    for (String codeItem: assembler){
+	        pw.println(codeItem);
+	    }
+	    
+		pw.close();
+		
+
+	}
+	
+	public static void printCode(ArrayList<String> assembler) throws IOException{
+
+		//code.asm is already coded
+
+		String comc = "cmd /c \\masm32\\bin\\ml /c /Zd /coff code.asm";
+        Process ptasm32 = Runtime.getRuntime().exec(comc);
+        InputStream is = ptasm32.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        String aux = br.readLine();
+        while (aux!=null){
+            System.out.println(aux);
+            aux = br.readLine();
+        }
+		String coml = "cmd /c \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE code.obj";
+		Process ptlink32 = Runtime.getRuntime().exec(coml);
+		InputStream is2 = ptlink32.getInputStream();
+        BufferedReader br2 = new BufferedReader(new InputStreamReader(is2));
+        String aux2 = br2.readLine();
+        while (aux2!=null){
+            System.out.println(aux2);
+            aux2 = br2.readLine();
+        }
+        Runtime aplicacion = Runtime.getRuntime();
+        aplicacion.exec("code.exe"); 
+
+        
 	}
 	
 	/**
@@ -76,6 +120,9 @@ public class CodeGenerator {
 		assembler.add(".data");
 		 
 		SymbolTable symbolTable = SymbolTable.getInstance();
+		symbolTable.addSymbol("0", new SymbolElement("CTE","0"));
+		symbolTable.addSymbol("1", new SymbolElement("CTE","1"));
+		
 		Set<String> idNames =  symbolTable.keySet();
 		for(String id : idNames){
 			if(symbolTable.get(id).getUse()=="VAR" || symbolTable.get(id).getUse()=="PARAM"){
@@ -89,6 +136,7 @@ public class CodeGenerator {
 			}
 		}
 		assembler.add(" _OFmsg DB \"OVERFLOW \",0");
+		assembler.add("rtn DD ?");
 		assembler.add(".code");
 		assembler.add("start:");
 	}
@@ -125,7 +173,18 @@ public class CodeGenerator {
 	 * @return {boolean}
 	 */
 	public static boolean isParameter(String varName) {
-		return Pattern.matches("^@\\w+", varName);
+		SymbolTable symbolTable = SymbolTable.getInstance();
+//		System.out.println(varName);
+//		if (symbolTable.contains(varName))
+//		System.out.println(symbolTable.identify(varName).getUse());
+		
+		if (symbolTable.contains(varName))
+			if (symbolTable.identify(varName).getUse()!=null && symbolTable.identify(varName).getUse()=="PARAM")
+				return true;
+				
+		return false;
+		
+		//return Pattern.matches("^@\\w+", varName);
 	}
 	/**
 	 * Adds function declarations to the assembler code
@@ -176,12 +235,11 @@ public class CodeGenerator {
 			} 
 			
 		} 
-		if(labels.values().size() > 0) {
+		if(labels.values().size() > 0&& context=="MAIN") {
 			ArrayList<String> remainingLabels = new ArrayList<String>(labels.values());
 			String lastLabel = remainingLabels.get(0);
 			assembler.add(lastLabel+":");
 		}
-		
 	}
 	
 }
