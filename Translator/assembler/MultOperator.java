@@ -9,7 +9,10 @@ public class MultOperator extends ConmutativeOperator {
 		String first = operands.get(0); 
 		//first must be EAX
 		CodeGenerator.assembler.add("imul "+first+" , "+second);
-		CodeGenerator.assembler.add("JO _overflowed");
+		//Overflow control
+		CodeGenerator.assembler.add("CMP "+first+" ,65535");
+		CodeGenerator.assembler.add("JG _overflowed");
+		
 		CodeGenerator.operandStack.push(first); //must be EAX
 		//System.out.println("imul "+first+" , "+second+System.lineSeparator());
 		//System.out.println("JO _overflowed"); //TODO add _overflowed: sentence, invoke message,

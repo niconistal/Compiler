@@ -100,9 +100,11 @@ MOV main_count , EBX
 MAIN_label_69:
 MOV EBX , _1
 ADD EBX , _1
-JO _overflowed
+CMP EBX , 65535
+JG _overflowed
 ADD EBX , _1
-JO _overflowed
+CMP EBX , 65535
+JG _overflowed
 CMP main_count , EBX
 JG MAIN_label_94
 MOV EBX , _2
@@ -112,7 +114,8 @@ MOV fun3_parameter , EBX
 CALL label_fun3
 MOV EBX , main_count
 ADD EBX , _1
-JO _overflowed
+CMP EBX , 65535
+JG _overflowed
 MOV main_count , EBX
 JMP MAIN_label_69
 MAIN_label_94:
@@ -125,7 +128,8 @@ MOV EAX , _16
 sub edx, edx
 idiv _4
 imul EAX , _1
-JO _overflowed
+CMP EAX ,65535
+JG _overflowed
 CMP main_count , EAX
 JG MAIN_label_130
 MOV EBX , _22
@@ -140,7 +144,8 @@ invoke MessageBox, NULL, addr NODIO22 ,addr NODIO22 ,MB_OK
 MAIN_label_123:
 MOV EBX , main_count
 ADD EBX , _1
-JO _overflowed
+CMP EBX , 65535
+JG _overflowed
 MOV main_count , EBX
 JMP MAIN_label_100
 MAIN_label_130:
@@ -159,12 +164,14 @@ MOV fun1_var9 , EBX
 MOV EBX,fun1_aux1
 MOV ECX,[EBX]
 ADD ECX , _2
-JO _overflowed
+CMP ECX , 65535
+JG _overflowed
 MOV EAX , _10
 sub edx, edx
 idiv _2
 ADD ECX , EAX
-JO _overflowed
+CMP ECX , 65535
+JG _overflowed
 MOV fun1_var9 , ECX
 MOV EBX , fun1_var9
 MOV rtn , EBX
@@ -177,9 +184,11 @@ MOV rtn , EBX
 invoke MessageBox, NULL, addr INSIDEFUN2 ,addr INSIDEFUN2 ,MB_OK
 MOV EAX , _2
 imul EAX , _3
-JO _overflowed
+CMP EAX ,65535
+JG _overflowed
 ADD EAX , _1
-JO _overflowed
+CMP EAX , 65535
+JG _overflowed
 MOV EBX , EAX
 MOV EAX , _20
 sub edx, edx
@@ -187,12 +196,15 @@ idiv _5
 SUB EBX , EAX
 MOV EAX , _6
 imul EAX , _7
-JO _overflowed
+CMP EAX ,65535
+JG _overflowed
 ADD EBX , EAX
-JO _overflowed
+CMP EBX , 65535
+JG _overflowed
 SUB EBX , _18
 ADD EBX , _9
-JO _overflowed
+CMP EBX , 65535
+JG _overflowed
 MOV fun2_var29 , EBX
 MOV EBX , fun2_var29
 MOV rtn , EBX
