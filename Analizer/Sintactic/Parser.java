@@ -539,7 +539,7 @@ int yylex() {
 			return Parser.CTE;
 		case "CHARCHAIN" :
 			return Parser.CHARCHAIN;
-		case "ULONG" :
+		case "UINT" :
 			return Parser.VARTYPE;
 		case "RETURN" :
 			return Parser.RETURN;
@@ -1235,8 +1235,8 @@ case 75:
 		SymbolElement element = new SymbolElement();
 
 		element = symbolTable.identify(varName);
-		/*The only allowed type for constants is ULONG*/
-		element.setVarType("ULONG");
+		/*The only allowed type for constants is UINT*/
+		element.setVarType("UINT");
 		currentIntCodeVector.add(varName);
 	}
 break;
