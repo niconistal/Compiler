@@ -6,6 +6,7 @@ public class ErrorHandler {
 
 	protected static ErrorHandler instance;
 	protected ArrayList<Error> errors;
+	private boolean errorState = false;
 	
 	
 	protected ErrorHandler(){
@@ -22,6 +23,13 @@ public class ErrorHandler {
 	
 	public void addError(Error error){
 		this.errors.add(error);
+		if(error.getType() == Error.TYPE_FATAL) {
+			this.errorState = true;
+		}
+	}
+	
+	public boolean isInErrorState(){
+		return this.errorState;
 	}
 	
 	public String toString(){
