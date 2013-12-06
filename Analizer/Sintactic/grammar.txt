@@ -56,6 +56,10 @@ start :  {
 program:declarationList
 		|declarationList executions
 		|executions
+		| error SEMICOLON {
+			Error error = new Error(Error.TYPE_FATAL,"Unhandled error", parserUtils.lexical.getLine());
+			parserUtils.errorHandler.addError(error);
+		}
 		;
 
 /* Declarations */
