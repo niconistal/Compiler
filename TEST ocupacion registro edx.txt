@@ -1,0 +1,22 @@
+(*Example programm, for our custom compiler*)
+(*Here we check the grammar and sintax of the compiler*)
+
+(*Declarations*)
+UINT var1, var2, var3, count;
+
+
+(*Executions*)
+
+(*Assigns*)
+var1=0;
+var2=2;
+var3=1;
+
+IF  ( var1+10/5-6*1+2*2*2+3==12/6-1+8/2+1*1*1-4/2+6/2 )  THEN (*must be 6*)
+	PRINT ('dio 7');
+ELSE  
+	PRINT ('no dio 7');
+;
+
+PRINT('termino el programa correctamente');
+
