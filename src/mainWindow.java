@@ -150,11 +150,17 @@ public class mainWindow {
 			PathContainer.setPath(lblNotSelected.getText());
 			Parser parser = new Parser();
 			parser.run();
-			CodeGenerator generator = new CodeGenerator();
-			Printer.printPolish(parser.parserUtils.intermediateCode);
-			generator.generate(parser.parserUtils.intermediateCode);
 			textArea.setText(ErrorHandler.getInstance().toString());
 			textArea_1.setText(SymbolTable.getInstance().toString());
+			
+			if(!ErrorHandler.getInstance().isInErrorState()){
+				CodeGenerator generator = new CodeGenerator();
+				Printer.printPolish(parser.parserUtils.intermediateCode);
+				generator.generate(parser.parserUtils.intermediateCode);
+			} else {
+				textArea.append("Error founds during compilation. Aborting");
+			}
+			
 			
 		}
 		

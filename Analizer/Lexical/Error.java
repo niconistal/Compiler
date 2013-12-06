@@ -10,6 +10,7 @@ public class Error {
 	private String message;
 	private int line;
 	
+	
 	public static final String TYPE_WARNING = "WARNING";
 	public static final String TYPE_FATAL = "FATAL";
 	public static final String TYPE_NOTIFICATION = "Notification";
