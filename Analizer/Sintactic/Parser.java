@@ -496,36 +496,10 @@ public class ParserUtils {
 	//a stack to handle index handling in IF and FOR statements
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
 
+
 	boolean forAssignment = false;
 
-		public String toString(){
-		String stringvar = new String();
 
-		String newline = System.getProperty("line.separator");
-
-		Set<String> keys = this.intermediateCode.keySet();
-		for (String key : keys){
-			stringvar += key.toUpperCase() + " -> ";
-			stringvar += this.intermediateCode.get(key).toString();
-			stringvar += newline;
-			stringvar += newline;
-		}
-
-		return stringvar;
-	}
-
-	public void godSaveThePolish(){
-		PrintWriter out = null;
-		try {
-			out = new PrintWriter("polish.txt");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		out.println(this.toString());
-		out.flush();
-
-	}
 }
 
 public ParserUtils parserUtils = new ParserUtils();

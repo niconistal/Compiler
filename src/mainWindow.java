@@ -19,9 +19,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
-
 import assembler.CodeGenerator;
 import utils.PathContainer;
+import utils.Printer;
 
 
 public class mainWindow {
@@ -151,7 +151,7 @@ public class mainWindow {
 			Parser parser = new Parser();
 			parser.run();
 			CodeGenerator generator = new CodeGenerator();
-			parser.parserUtils.godSaveThePolish();
+			Printer.printPolish(parser.parserUtils.intermediateCode);
 			generator.generate(parser.parserUtils.intermediateCode);
 			textArea.setText(ErrorHandler.getInstance().toString());
 			textArea_1.setText(SymbolTable.getInstance().toString());
