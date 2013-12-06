@@ -18,17 +18,24 @@
 
 //#line 2 "./grammar.txt"
 package Sintactic;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
+
 import Lexical.LexicalAnalizer;
 import Lexical.Token;
 import Lexical.ErrorHandler;
 import Lexical.Error;
 import Lexical.SymbolTable;
+
 import java.util.ArrayList;
+
 import utils.PathContainer;
 import Lexical.SymbolElement;
+
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 
 //#line 32 "Parser.java"
@@ -490,6 +497,35 @@ public class ParserUtils {
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
 
 	boolean forAssignment = false;
+
+		public String toString(){
+		String stringvar = new String();
+
+		String newline = System.getProperty("line.separator");
+
+		Set<String> keys = this.intermediateCode.keySet();
+		for (String key : keys){
+			stringvar += key.toUpperCase() + " -> ";
+			stringvar += this.intermediateCode.get(key).toString();
+			stringvar += newline;
+			stringvar += newline;
+		}
+
+		return stringvar;
+	}
+
+	public void godSaveThePolish(){
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter("polish.txt");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out.println(this.toString());
+		out.flush();
+
+	}
 }
 
 public ParserUtils parserUtils = new ParserUtils();
@@ -505,7 +541,7 @@ int yylex() {
 			return Parser.CTE;
 		case "CHARCHAIN" :
 			return Parser.CHARCHAIN;
-		case "ULONG" :
+		case "UINT" :
 			return Parser.VARTYPE;
 		case "RETURN" :
 			return Parser.RETURN;
@@ -560,7 +596,7 @@ int yylex() {
 	}
 	return -1;
 }
-//#line 492 "Parser.java"
+//#line 521 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -1219,8 +1255,8 @@ case 77:
 		SymbolElement element = new SymbolElement();
 
 		element = symbolTable.identify(varName);
-		/*The only allowed type for constants is ULONG*/
-		element.setVarType("ULONG");
+		/*The only allowed type for constants is UINT*/
+		element.setVarType("UINT");
 		currentIntCodeVector.add(varName);
 	}
 break;
@@ -1255,7 +1291,7 @@ case 78:
 
 	}
 break;
-//#line 1182 "Parser.java"
+//#line 1211 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

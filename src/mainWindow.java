@@ -151,6 +151,7 @@ public class mainWindow {
 			Parser parser = new Parser();
 			parser.run();
 			CodeGenerator generator = new CodeGenerator();
+			parser.parserUtils.godSaveThePolish();
 			generator.generate(parser.parserUtils.intermediateCode);
 			textArea.setText(ErrorHandler.getInstance().toString());
 			textArea_1.setText(SymbolTable.getInstance().toString());

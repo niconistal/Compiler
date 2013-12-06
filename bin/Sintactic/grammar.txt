@@ -490,8 +490,8 @@ factor: CTE {
 		SymbolElement element = new SymbolElement();
 
 		element = symbolTable.identify(varName);
-		//The only allowed type for constants is ULONG
-		element.setVarType("ULONG");
+		//The only allowed type for constants is UINT
+		element.setVarType("UINT");
 		currentIntCodeVector.add(varName);
 	}
 	| ID {
@@ -548,6 +548,35 @@ public class ParserUtils {
 	String forConditionVar;
 	//a stack to handle index handling in IF and FOR statements
 	ArrayList<Integer> indexStack = new ArrayList<Integer>();
+	
+		public String toString(){
+		String stringvar = new String();
+		
+		String newline = System.getProperty("line.separator");
+		
+		Set<String> keys = this.intermediateCode.keySet();
+		for (String key : keys){
+			stringvar += key.toUpperCase() + " -> ";
+			stringvar += this.intermediateCode.get(key).toString();
+			stringvar += newline;
+			stringvar += newline;
+		}
+		
+		return stringvar;
+	}
+	
+	public void godSaveThePolish(){
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter("polish.txt");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out.println(this.toString());
+		out.flush();
+		
+	}
 }
 
 public ParserUtils parserUtils = new ParserUtils();
@@ -563,7 +592,7 @@ int yylex() {
 			return Parser.CTE;
 		case "CHARCHAIN" :
 			return Parser.CHARCHAIN;
-		case "ULONG" :
+		case "UINT" :
 			return Parser.VARTYPE;
 		case "RETURN" :
 			return Parser.RETURN;

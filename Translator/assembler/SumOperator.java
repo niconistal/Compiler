@@ -8,7 +8,10 @@ public class SumOperator extends ConmutativeOperator{
 		String first = operands.get(0);
 		String second = operands.get(1);
 		CodeGenerator.assembler.add("ADD "+ first +" , "+ second);
-		CodeGenerator.assembler.add("JO _overflowed");
+		//Overflow control
+		CodeGenerator.assembler.add("CMP "+first+" , 65535");
+		CodeGenerator.assembler.add("JG _overflowed");
+		
 		CodeGenerator.operandStack.push(first);
 		//System.out.println("add "+ first +" , "+ second + System.lineSeparator());
 		//System.out.println("JO _overflowed"); //TODO add _overflowed: sentence, invoke message,
