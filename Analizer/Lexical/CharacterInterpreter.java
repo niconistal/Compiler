@@ -27,8 +27,53 @@ public class CharacterInterpreter {
 		 if (character.equals(String.valueOf(LexicalAnalizer.TAB))){
 			 return "\\t";
 		 }
+		 if (character.equals(")")) {
+				return ")"; 
+		}
+		 if (character.equals(",")) {
+				return ","; 
+		}
+		 if (character.equals("+")) {
+				return "+"; 
+		}
+		 if (character.equals("-")) {
+				return "-"; 
+		} 
+		 if (character.equals("*")) {
+				return "*"; 
+		}
+		 if (character.equals("/")) {
+				return "/"; 
+		}
+		 if (character.equals("=")) {
+				return "="; 
+		}
+		 if (character.equals("<")) {
+				return "<"; 
+		}
+		 if (character.equals(">")) {
+				return ">"; 
+		}
+		 if (character.equals("!")) {
+				return "!"; 
+		}
+		 if (character.equals("'")) {
+				return "'"; 
+		}
+		 if (character.equals("(")) {
+				return "("; 
+		}
+		 if (character.equals("#")) {
+				return "#"; 
+		}
+		 if (character.equals(" ")) {
+				return " "; 
+		} 
+		 if (character.equals(";")) {
+				return ";"; 
+		} 
 		 
-		 return character;
+		 return "@"; //strange character
  
 	}
 }

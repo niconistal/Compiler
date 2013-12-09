@@ -13,6 +13,7 @@ import semanticActions.LineCounter;
 import semanticActions.LiteralTokenSetter;
 import semanticActions.RangeChecker;
 import semanticActions.SingleQuoteAdder;
+import semanticActions.StrangeCharacter;
 import semanticActions.SymbolTableHandler;
 import semanticActions.TokenInitializer;
 
@@ -71,6 +72,9 @@ public class SemanticActionFactory {
 								
 				case "AS14" : 	acAction = new LiteralTokenSetter();
 								break;
+								
+				case "AS19" : 	acAction = new StrangeCharacter();
+				break;
 								
 				default    :	acAction = null;
 			}

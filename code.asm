@@ -9,7 +9,6 @@ includelib \masm32\lib\user32.lib
 .data
 INSIDEFUN1 DB "INSIDE FUN 1",0
 fun2_var29 DD ?
-SINGLEEXECUTION DB "SINGLE EXECUTION",0
 _36 DD 36
 fun1_parameter DD ?
 fun2_parameter DD ?
@@ -58,8 +57,8 @@ MOV main_var2 , EBX
 MOV EBX , _1
 MOV main_var3 , EBX
 LEA EBX , [main_var2]
-MOV fun2_parameter , EBX
-CALL label_fun2
+MOV fun1_parameter , EBX
+CALL label_fun1
 MOV EBX , rtn
 MOV main_var1 , EBX
 MOV EBX , _9
@@ -150,20 +149,6 @@ JG _overflowed
 MOV main_count , EBX
 JMP MAIN_label_100
 MAIN_label_130:
-MOV EBX , main_var3
-MOV main_count , EBX
-MAIN_label_133:
-MOV EBX , _6
-CMP main_count , EBX
-JG MAIN_label_147
-invoke MessageBox, NULL, addr SINGLEEXECUTION ,addr SINGLEEXECUTION ,MB_ICONINFORMATION
-MOV EBX , main_count
-ADD EBX , _1
-CMP EBX , 65535
-JG _overflowed
-MOV main_count , EBX
-JMP MAIN_label_133
-MAIN_label_147:
 invoke ExitProcess, 0
 _overflowed:
 invoke MessageBox, NULL, addr _OFmsg ,addr _OFmsg ,MB_ICONERROR
