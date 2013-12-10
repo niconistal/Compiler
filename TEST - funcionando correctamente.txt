@@ -4,7 +4,7 @@
 (*Declarations*)
 UINT var1, var2, var3, count;
 
-FUNCTION fun1 ( UINT aux1; ) 
+FUNCTION fun1 (UINT aux1; ) 
 	BEGIN 
 		UINT var9;
 		PRINT ('inside fun 1');
@@ -40,6 +40,7 @@ var3=1;
 
 (*Several IFs and function calls*)
 var1 = fun1(var2);
+
 IF  ( var1==9 )  THEN
 	PRINT ('dio 9');
 ELSE  
@@ -64,24 +65,25 @@ ELSE
 
 (*Iteration, 3 times*)
 FOR ( count = var3 ; count <= 1+1+1 ) 
+BEGIN
 	UINT var4;
 	var4=2;
 	fun3 (var4);
+END
 	
-
 ;
 
 (*FOR and IF, two times*)
 var3=3;
 FOR ( count = var3 ; count <= 16/4*1 ) 
+BEGIN
 	UINT var9;
 	var9=22;
 	IF  ( var9==22 )  THEN
-	PRINT ('dio 22');
-	ELSE  
-	PRINT ('no dio 22');
-	;	
+		PRINT ('dio 22');
+			ELSE  
+		PRINT ('no dio 22');
+	;
+END	
 
 ;
-
-PRINT('termino el programa correctamente');

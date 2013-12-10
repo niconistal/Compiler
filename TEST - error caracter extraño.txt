@@ -2,11 +2,11 @@
 (*Here we check the grammar and sintax of the compiler*)
 
 (*Declarations*)
-ULONG var1, var2, var3, count;
+UINT ?var1, ~var2, ^var3, [count;
 
-FUNCTION fun1 ( ULONG aux1; ) 
+FUNCTION fun1 (UINT aux1; ) 
 	BEGIN 
-		ULONG var9;
+		UINT var9;
 		PRINT ('inside fun 1');
 		var9=0;
 		var9=aux1+2+10/2;
@@ -15,17 +15,17 @@ FUNCTION fun1 ( ULONG aux1; )
 	
 
 
-FUNCTION fun2 ( ULONG aux2; ) 
+FUNCTION fun2 ( UINT aux2; ) 
 	BEGIN 
-		ULONG var29;
+		UINT var29;
 		PRINT ('inside fun 2');
 		var29=1+2*3-20/5+6*7-18+9;
 		RETURN (var29);
 	END ;
 
-FUNCTION fun3 ( ULONG aux2; ) 
+FUNCTION fun3 ( UINT aux2; ) 
 	BEGIN 
-		ULONG none;
+		UINT none;
 		none=0;
 		PRINT ('inside function call  by FOR');
 		RETURN (none);
@@ -35,11 +35,12 @@ FUNCTION fun3 ( ULONG aux2; )
 
 (*Assigns*)
 var1=0;
-var2=3456789045678909876+3456789045678909876;
+var2=2;
 var3=1;
 
 (*Several IFs and function calls*)
 var1 = fun1(var2);
+
 IF  ( var1==9 )  THEN
 	PRINT ('dio 9');
 ELSE  
@@ -48,7 +49,7 @@ ELSE
 
 
 var1 = fun1(var1);
-IF  ( var1==9 )  THEN
+IF  ( var19==9 )  THEN
 	PRINT ('dio 9');
 ELSE  
 	PRINT ('no dio 9');
@@ -64,22 +65,25 @@ ELSE
 
 (*Iteration, 3 times*)
 FOR ( count = var3 ; count <= 1+1+1 ) 
-	ULONG var4;
+BEGIN
+	UINT var4;
 	var4=2;
 	fun3 (var4);
+END
 	
-
 ;
 
 (*FOR and IF, two times*)
 var3=3;
 FOR ( count = var3 ; count <= 16/4*1 ) 
-	ULONG var9;
+BEGIN
+	UINT var9;
 	var9=22;
 	IF  ( var9==22 )  THEN
-	PRINT ('dio 22');
-	ELSE  
-	PRINT ('no dio 22');
-	;	
+		PRINT ('dio 22');
+			ELSE  
+		PRINT ('no dio 22');
+	;
+END	
 
 ;
